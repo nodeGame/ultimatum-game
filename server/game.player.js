@@ -148,7 +148,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 return true;
             }
             catch(error) {
-    //            node.set("Error", error);
+                node.set("Error", "Quiz Error " + error);
                 setTimeout(function() {
                     node.done();
                 }, 100);

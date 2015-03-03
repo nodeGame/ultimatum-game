@@ -1,3 +1,3 @@
 module.exports = {
-    numGames: 10
+    numGames: 4
 };
