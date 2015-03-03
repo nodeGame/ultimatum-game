@@ -51,9 +51,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
     //
     // - id: a unique name for the stage
     // - cb: a callback function to execute once
-    //     the stage is loaded.
+    //c1         the stage is loaded.
     //
-    // When adding a stage / step into the stager
+    // When addizng a stage / step into the stager
     // there are many additional options to
     // configure it.
     //
@@ -119,28 +119,37 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // - or a function returning the number of milliseconds.
         timer: 60000,
         done: function() {
-            var b, QUIZ, answers, isTimeup;
-            QUIZ = W.getFrameWindow().QUIZ;
-            b = W.getElementById('submitQuiz');
+            try {
+                var b, QUIZ, answers, isTimeup;
+                QUIZ = W.getFrameWindow().QUIZ;
+                b = W.getElementById('submitQuiz');
 
-            answers = QUIZ.checkAnswers(b);
-            isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+                answers = QUIZ.checkAnswers(b);
+                isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
 
-            if (!answers.__correct__ && !isTimeUp) {
-                return false;
+                if (!answers.__correct__ && !isTimeUp) {
+                    return false;
+                }
+
+                answers.timeUp = isTimeUp;
+
+                // On TimeUp there are no answers
+                node.set('QUIZ', answers);
+                node.emit('INPUT_DISABLE');
+                // We save also the time to complete the step.
+                node.set('timestep', {
+                    time: node.timer.getTimeSince('step'),
+                    timeup: isTimeUp
+                });
+                return true;
+            }
+            catch(error) {
+                node.set("Error", error);
+                setTimeout(function() {
+                    node.done();
+                }, 100);
             }
 
-            answers.timeUp = isTimeUp;
-
-            // On TimeUp there are no answers
-            node.set('QUIZ', answers);
-            node.emit('INPUT_DISABLE');
-            // We save also the time to complete the step.
-            node.set('timestep', {
-                time: node.timer.getTimeSince('step'),
-                timeup: isTimeUp
-            });
-            return true;
         }
     });
 

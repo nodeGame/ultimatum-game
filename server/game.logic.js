@@ -42,6 +42,9 @@ var nocache = true;
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
+    node.on.data('Error', function(msg) {
+        console.log(node.nodename, msg.data);
+    });
 
     // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
@@ -86,23 +89,23 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
-    stager.setDefaultProperty('minPlayers', [ 
+    stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
-        cbs.notEnoughPlayers 
+        cbs.notEnoughPlayers
     ]);
 
     stager.extendStep('precache', {
         cb: function() {}
     });
-    
+
     stager.extendStep('selectLanguage', {
         cb: function() {}
     });
-    
+
     stager.extendStep('instructions', {
         cb: function() {}
     });
-    
+
     stager.extendStep('quiz', {
         cb: function() {}
     });

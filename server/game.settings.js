@@ -32,7 +32,7 @@ module.exports = {
 
     // Which treatment to play.
     // Leave undefined for a randomly chosen treatment.
-    CHOSEN_TREATMENT: undefined, // 
+    CHOSEN_TREATMENT: 'pp', //
 
     // Number or rounds to repeat the bidding. *
     REPEAT: 2,
@@ -66,6 +66,6 @@ module.exports = {
         }
     }
 
-    // * =  If you change this, you need to update 
+    // * =  If you change this, you need to update
     // the instructions and quiz static files in public/
 };
