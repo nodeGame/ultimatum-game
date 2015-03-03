@@ -100,10 +100,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.extendStep('instructions', {
         cb: cbs.instructions,
- done: function() {
-     node.set("Error", "Ultimatum Player Test Error");
-     return true;
- },
         minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
         timer: 90000
