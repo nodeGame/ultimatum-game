@@ -42,11 +42,7 @@ var nocache = true;
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
-    node.on.data('Error', function(msg) {
-        console.log(node.nodename, msg.data);
-    });
-
-    // Increment counter.
+   // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
 
     // Client game to send to reconnecting players.

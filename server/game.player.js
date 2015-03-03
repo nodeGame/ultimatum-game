@@ -51,9 +51,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
     //
     // - id: a unique name for the stage
     // - cb: a callback function to execute once
-    //c1         the stage is loaded.
+    //     the stage is loaded.
     //
-    // When addizng a stage / step into the stager
+    // When adding a stage / step into the stager
     // there are many additional options to
     // configure it.
     //
@@ -100,6 +100,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.extendStep('instructions', {
         cb: cbs.instructions,
+ done: function() {
+     node.set("Error", "Ultimatum Player Test Error");
+     return true;
+ },
         minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
         timer: 90000
@@ -144,7 +148,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 return true;
             }
             catch(error) {
-                node.set("Error", error);
+    //            node.set("Error", error);
                 setTimeout(function() {
                     node.done();
                 }, 100);

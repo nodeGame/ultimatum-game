@@ -30,15 +30,21 @@ var client = module.parent.exports.client;
 var counter = module.parent.exports.counter;
 
 function init() {
-    DUMP_DIR = path.resolve(channel.resolveGameDir('ultimatum'), 'data') + '/' + counter + '/';
+    DUMP_DIR = path.resolve(channel.resolveGameDir('ultimatum'), 'data') + '/' +
+     counter + '/';
     DUMP_DIR_JSON = DUMP_DIR + 'json/';
     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
+
+    node.on.data('Error', function(msg) {
+        console.log(node.nodename, msg.data);
+    });
 
     // Recursively create directories, sub-trees and all.
     J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
     J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
 
-    console.log('********************** ultimatum room ' + counter++ + ' **********************');
+    console.log('********************** ultimatum room ' + counter++ +
+     ' **********************');
 
     var COINS = settings.COINS;
 
@@ -170,7 +176,7 @@ function init() {
         node.remoteSetup('game_settings', p.id, client.settings);
         node.remoteSetup('plot', p.id, client.plot);
         node.remoteSetup('env', p.id, client.env);
-        
+
         // Start the game on the reconnecting client.
         // Need to give step: false, because otherwise pre-caching will
         // call done() on reconnecting stage.
@@ -231,7 +237,8 @@ function init() {
 }
 
 function gameover() {
-    console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
+    console.log('************** GAMEOVER ' + gameRoom.name +
+    ' ****************');
 
     // Saving all indexes.
     node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
@@ -273,7 +280,8 @@ function doMatch() {
 
         // Send a message to each player with their role
         // and the id of the other player.
-        console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS', respondent.id);
+        console.log('==================== LOGIC: BIDDER is', bidder.id,
+                    '; RESPONDENT IS', respondent.id);
         node.say('BIDDER', bidder.id, data_b);
         node.say('RESPONDENT', respondent.id, data_r);
     }
