@@ -31,9 +31,9 @@ module.exports = function(stager, settings) {
     // Can skip specific stages or steps here.
 
     // stager.skip('precache');
-    // stager.skip('selectLanguage');
-    // stager.skip('quiz');
-    // stager.skip('instructions');
-    // stager.skip('mood');
-    // stager.skip('ultimatum')
+    stager.skip('selectLanguage');
+    stager.skip('quiz');
+    stager.skip('instructions');
+    stager.skip('mood');
+    stager.skip('ultimatum')
 };

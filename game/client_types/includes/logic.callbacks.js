@@ -36,18 +36,6 @@ function init() {
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
 
-//     // Create matcher and matches.
-//     this.matcher = new Matcher();
-//     this.matcher.generateMatches('random', node.game.pl.size());
-//     this.matcher.setIds(node.game.pl.id.getAllKeys());
-// 
-//     this.roles = {
-//         RESPONDENT: 0,
-//         BIDDER: 1,
-//         SOLO: -1
-//     };
-
-    // this.roleMapper = {};
 
     this.lastStage = this.getCurrentGameStage();
 
@@ -135,46 +123,6 @@ function gameover() {
     // channel.destroyGameRoom(gameRoom.name);
 }
 
-// function doMatch() {
-//     var match, id1, id2, soloId;
-//     
-//     // Generates new random matches for this round.
-//     node.game.matcher.match(true)
-//     match = node.game.matcher.getMatch();
-// 
-//     // Resets all roles.
-//     node.game.roleMapper = {};
-// 
-//     // While we have matches, send them to clients.
-//     while (match) {
-//         id1 = match[node.game.roles.BIDDER];
-//         id2 = match[node.game.roles.RESPONDENT];
-//         if (id1 !== 'bot' && id2 !== 'bot') {
-//             node.say('ROLE', id1, {
-//                 role: 'BIDDER',
-//                 other: id2
-//             });
-//             node.say('ROLE', id2, {
-//                 role: 'RESPONDENT',
-//                 other: id1
-//             });
-//             node.game.roleMapper[id1] = 'BIDDER';
-//             node.game.roleMapper[id2] = 'RESPONDENT';
-//         }
-//         else {
-//             soloId = id1 === 'bot' ? id2 : id1;
-//             node.say('ROLE', soloId, {
-//                 role: 'SOLO',
-//                 other: null
-//             });
-//             node.game.roleMapper[soloId] = 'SOLO';
-// 
-//         }
-//         match = node.game.matcher.getMatch();
-//     }
-//     console.log('Matching completed.');
-// }
-
 function endgame() {
     var code, exitcode, accesscode;
     var filename, bonusFile, bonus;
@@ -232,8 +180,6 @@ function endgame() {
 
     // Dump all memory.
     node.game.memory.save(DUMP_DIR + 'memory_all.json');
-
-    node.done();
 }
 
 

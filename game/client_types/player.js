@@ -390,8 +390,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
-        frame: 'ended.html',
-        cb: cbs.endgame,
+        // Another widget-step (see the mood step above).
+        widget: {
+            name: 'EndScreen',
+            root: "body",
+            options: {
+                title: false,
+                showEmailForm: true
+            }
+        },
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the donebutton parameter
         //
@@ -399,6 +406,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // the text on the button, or disable it (false).
         donebutton: false
     });
+
+    
+//     stager.extendStep('endgame', {
+//         frame: 'ended.html',
+//         cb: cbs.endgame,
+//         
+//         donebutton: false
+//     });
 
     stager.extendStep('questionnaire', {
         init: function() {
