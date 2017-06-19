@@ -123,6 +123,65 @@ function gameover() {
     // channel.destroyGameRoom(gameRoom.name);
 }
 
+// function endgame() {
+//     var code, exitcode, accesscode;
+//     var filename, bonusFile, bonus;
+//     var EXCHANGE_RATE;
+// 
+//     EXCHANGE_RATE = settings.EXCHANGE_RATE_INSTRUCTIONS / settings.COINS;;
+// 
+//     console.log('FINAL PAYOFF PER PLAYER');
+//     console.log('***********************');
+// 
+//     bonus = node.game.pl.map(function(p) {
+// 
+//         code = channel.registry.getClient(p.id);
+//         if (!code) {
+//             console.log('ERROR: no code in endgame:', p.id);
+//             return ['NA', 'NA'];
+//         }
+// 
+//         accesscode = code.AccessCode;
+//         exitcode = code.ExitCode;
+// 
+//         if (node.env('treatment') === 'pp' && node.game.gameTerminated) {
+//             code.win = 0;
+//         }
+//         else {
+//             code.win = Number((code.win || 0) * (EXCHANGE_RATE)).toFixed(2);
+//             code.win = parseFloat(code.win, 10);
+//         }
+//         channel.registry.checkOut(p.id);
+// 
+//         node.say('WIN', p.id, {
+//             win: code.win,
+//             exitcode: code.ExitCode
+//         });
+// 
+//         console.log(p.id, ': ',  code.win, code.ExitCode);
+//         return [p.id, code.ExitCode || 'na', code.win,
+//                 node.game.gameTerminated];
+//     });
+// 
+//     console.log('***********************');
+//     console.log('Game ended');
+// 
+//     // Write down bonus file.
+//     filename = DUMP_DIR + 'bonus.csv';
+//     bonusFile = fs.createWriteStream(filename);
+//     bonusFile.on('error', function(err) {
+//         console.log('Error while saving bonus file: ', err);
+//     });
+//     bonusFile.write(["access", "exit", "bonus", "terminated"].join(', ') + '\n');
+//     bonus.forEach(function(v) {
+//         bonusFile.write(v.join(', ') + '\n'); 
+//     });
+//     bonusFile.end();
+// 
+//     // Dump all memory.
+//     node.game.memory.save(DUMP_DIR + 'memory_all.json');
+// }
+
 function endgame() {
     var code, exitcode, accesscode;
     var filename, bonusFile, bonus;
@@ -132,6 +191,11 @@ function endgame() {
 
     console.log('FINAL PAYOFF PER PLAYER');
     console.log('***********************');
+
+    gameRoom.computeBonus({
+        say: true, // default false,
+        dump: true // default false
+    });
 
     bonus = node.game.pl.map(function(p) {
 
