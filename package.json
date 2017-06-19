@@ -2,7 +2,7 @@
   "name": "ultimatum-game",
   "channelName": "ultimatum",
   "description": "Plays an ultimatum game with nodegame",
-  "version": "3.5.5",
+  "version": "4.0.0",
   "author": {
     "name": "Stefano Balietti",
     "email": "ste@nodegame.org",
