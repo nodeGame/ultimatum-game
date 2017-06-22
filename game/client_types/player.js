@@ -393,10 +393,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Another widget-step (see the mood step above).
         widget: {
             name: 'EndScreen',
-            root: "body",
+            root: 'body',
             options: {
                 title: false,
-                showEmailForm: true
+                showEmailForm: true,
+                email: { errString: 'Please enter a valid email and retry' },
+                feedback: { minLength: 50 }
             }
         },
         /////////////////////////////////////////////////////////////
@@ -406,14 +408,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // the text on the button, or disable it (false).
         donebutton: false
     });
-
-    
-//     stager.extendStep('endgame', {
-//         frame: 'ended.html',
-//         cb: cbs.endgame,
-//         
-//         donebutton: false
-//     });
 
     stager.extendStep('questionnaire', {
         init: function() {
