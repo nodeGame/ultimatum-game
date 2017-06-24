@@ -1,6 +1,6 @@
 /**
- * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti
+ * # Functions used by the logic of Ultimatum Game
+ * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -11,12 +11,9 @@ var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
 var path = require('path');
 var fs = require('fs-extra');
-var Matcher = ngc.Matcher;
-var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
 module.exports = {
     init: init,
-    gameover: gameover,
     endgame: endgame,
     notEnoughPlayers: notEnoughPlayers,
     reconnectUltimatum: reconnectUltimatum
@@ -26,16 +23,14 @@ var node = module.parent.exports.node;
 var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
-var counter = module.parent.exports.counter;
 
 function init() {
-    DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
-    
-    fs.mkdirsSync(DUMP_DIR);
+    // DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + 
+    // '/' + counter + '/';    
+    // fs.mkdirsSync(DUMP_DIR);
 
-    console.log('********************** ultimatum room ' + counter++ +
-                ' **********************');
-
+    console.log('********************** ultimatum room ' + gameRoom.session +
+                ' *********************');
 
     this.lastStage = this.getCurrentGameStage();
 
@@ -71,8 +66,7 @@ function init() {
         db = node.game.memory.stage[currentStage];
 
         if (db && db.size()) {
-
-            prefix = DUMP_DIR + 'memory_' + currentStage;
+            prefix = gameRoom.dataDir + 'memory_' + currentStage;
             db.save(prefix + '.csv', { flags: 'w' }); 
             db.save(prefix + '.nddb', { flags: 'w' }); 
 
@@ -114,13 +108,6 @@ function init() {
     });
 
     console.log('init');
-}
-
-function gameover() {
-    console.log('************** GAMEOVER ' + gameRoom.name + ' **************');
-
-    // TODO: fix this.
-    // channel.destroyGameRoom(gameRoom.name);
 }
 
 // function endgame() {
@@ -203,7 +190,7 @@ function endgame() {
     console.log(out);
     
     // Dump all memory.
-    node.game.memory.save(DUMP_DIR + 'memory_all.json');
+    node.game.memory.save('memory_all.json');
 }
 
 

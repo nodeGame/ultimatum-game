@@ -448,15 +448,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    // We serialize the game sequence before sending it.
-    game.plot = stager.getState();
+//     // We serialize the game sequence before sending it.
+//     game.plot = stager.getState();
+// 
+//     // Other settings, optional.
+// 
+//     game.verbosity = 1000;
+// 
+//     game.debug = setup.debug;
+//     game.nodename = 'player';
+// 
+//     return game;
 
-    // Other settings, optional.
-
-    game.verbosity = 1000;
-
-    game.debug = setup.debug;
-    game.nodename = 'player';
-
-    return game;
 };

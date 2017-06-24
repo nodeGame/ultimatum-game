@@ -18,11 +18,8 @@ module.exports = function(settings, stages) {
     //    description: 'no descr'
     // };
 
-    //auto: true = automatic run, auto: false = user input
-    game.env = {
-        auto: false
-    };
-
+    // If debug is false (default false), exception will be caught and
+    // and printed to screen, and the game will continue.
     game.debug = true;
 
     game.verbosity = 1;

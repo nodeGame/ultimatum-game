@@ -21,6 +21,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
+    // TODO: check if stager should be recreated as in autoplay.
+
 
     // Import other functions used in the game.
     ///////////////////////////////////////////
