@@ -453,13 +453,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Other settings, optional.
 
-    game.env = {
-        auto: settings.AUTO,
-        treatment: treatmentName
-    };
     game.verbosity = 1000;
 
-    game.debug = settings.DEBUG;
+    game.debug = setup.debug;
     game.nodename = 'player';
 
     return game;

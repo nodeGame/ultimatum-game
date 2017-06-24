@@ -7,10 +7,8 @@
  */
 
 module.exports = {
-
     init: init,
     ultimatum: ultimatum,
-
 };
 
 function init() {

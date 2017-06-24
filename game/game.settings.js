@@ -25,15 +25,6 @@ module.exports = {
 
     EXCHANGE_RATE_INSTRUCTIONS: 0.01,
 
-    // DEBUG.
-    DEBUG: true,
-
-    // AUTO-PLAY.
-    AUTO: false,
-
-    // AUTHORIZATION.
-    AUTH: 'NO', // MTURK, LOCAL, NO.
-
     // TIMER.
     // If the name of a key of the TIMER object matches the name of one
     // of the steps or stages, its value is automatically used as the

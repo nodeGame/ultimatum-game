@@ -25,6 +25,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Import other functions used in the game.
     ///////////////////////////////////////////
 
+
+    // TODO: this are all wrong.
     cbs = require(__dirname + '/includes/bot.callbacks.js');
 
     // Specify init function, and extend default stages.
@@ -50,22 +52,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Let's add the metadata information.
     game.metadata = {
         name: 'ultimatum_bot',
-        version: '0.4.0',
+        version: '0.5.0',
         description: 'Bot randomly playing the ultimatum game'
     };
 
     // Other settings, optional.
-    game.settings = {
-        publishLevel: 2
-    };
-
-    game.env = {
-        auto: settings.AUTO,
-        treatment: treatmentName
-    };
 
     game.verbosity = 0;
-    game.debug = settings.DEBUG;
+    game.debug = setup.debug;
     game.nodename = 'bot';
 
     return game;
