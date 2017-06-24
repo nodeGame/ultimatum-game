@@ -1,6 +1,6 @@
 /**
  * # Logic code for Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -9,7 +9,6 @@
  */
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
-var J = ngc.JSUS;
 
 // Flag to not cache required files.
 var nocache = true;
@@ -85,13 +84,5 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         minPlayers: undefined,
         steprule: stepRules.SOLO
     });
-
-//     // Here we group together the definition of the game logic.
-//     return {
-//         // Extracts, and compacts the game plot that we defined above.
-//         plot: stager.getState(),
-//         // Controls the amount of information printed to screen.
-//         verbosity: -100
-//     };
 
 };

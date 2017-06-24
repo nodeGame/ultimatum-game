@@ -25,6 +25,14 @@ module.exports = {
     // (defaults: "/pages/accessdenied.htm")
     accessDeniedUrl: '/ultimatum/unauth.htm',
 
-    enableReconnections: true
+    enableReconnections: true,
+
+    // If undefined it looks into the data folder and self-initialize to
+    // the next available id, starting from 1.
+    // roomCounter: 100,
+
+    // If TRUE, every newly created room is assigned an own subdirectory
+    // inside the game data/ dir. Default: TRUE
+    // roomOwnDataDir: true
 };
 

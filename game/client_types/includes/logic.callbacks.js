@@ -25,16 +25,11 @@ var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 
 function init() {
-    // DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + 
-    // '/' + counter + '/';    
-    // fs.mkdirsSync(DUMP_DIR);
 
-    console.log('********************** ultimatum room ' + gameRoom.session +
+    console.log('********************** ultimatum ' + gameRoom.name +
                 ' *********************');
 
     this.lastStage = this.getCurrentGameStage();
-
-    this.gameTerminated = false;
 
     // If players disconnects and then re-connects within the same round
     // we need to take into account only the final bids within that round.
@@ -43,21 +38,22 @@ function init() {
     // "STEPPING" is the last event emitted before the stage is updated.
     node.on('STEPPING', function() {
         var currentStage, db, p, gain, prefix;
+        var client;
 
         currentStage = node.game.getCurrentGameStage();
 
         // Update last stage reference.
         node.game.lastStage = currentStage;
-
+        
         for (p in node.game.lastBids) {
             if (node.game.lastBids.hasOwnProperty(p)) {
 
                 // Respondent payoff.
-                code = channel.registry.getClient(p);
+                client = channel.registry.getClient(p);
                 
                 gain = node.game.lastBids[p];
                 if (gain) {
-                    code.win = !code.win ? gain : code.win + gain;
+                    client.win = !client.win ? gain : client.win + gain;
                     console.log('Added to ' + p + ' ' + gain + ' ECU');
                 }
             }
@@ -83,19 +79,17 @@ function init() {
     });
 
     // Update the Payoffs
-    node.on.data('response', function(msg) {
-        var resWin, bidWin, code, response;
-        response = msg.data;
-
-        if (response.response === 'ACCEPT') {
+    node.on.data('done', function(msg) {
+        var resWin, bidWin, response;
+        if (msg.data && msg.data.response === 'ACCEPT') {
+            response = msg.data;
             resWin = parseInt(response.value, 10);
             bidWin = settings.COINS - resWin;
 
             // Save the results in a temporary variables. If the round
-            // finishes without a disconnection we will add them to the
-            // database.
+            // finishes without a disconnection we will add them to the .
             node.game.lastBids[msg.from] = resWin;
-            node.game.lastBids[response.from] = bidWin;
+            node.game.lastBids[response.responseTo] = bidWin;
         }
     });
 
@@ -110,84 +104,21 @@ function init() {
     console.log('init');
 }
 
-// function endgame() {
-//     var code, exitcode, accesscode;
-//     var filename, bonusFile, bonus;
-//     var EXCHANGE_RATE;
-// 
-//     EXCHANGE_RATE = settings.EXCHANGE_RATE_INSTRUCTIONS / settings.COINS;;
-// 
-//     console.log('FINAL PAYOFF PER PLAYER');
-//     console.log('***********************');
-// 
-//     bonus = node.game.pl.map(function(p) {
-// 
-//         code = channel.registry.getClient(p.id);
-//         if (!code) {
-//             console.log('ERROR: no code in endgame:', p.id);
-//             return ['NA', 'NA'];
-//         }
-// 
-//         accesscode = code.AccessCode;
-//         exitcode = code.ExitCode;
-// 
-//         if (node.env('treatment') === 'pp' && node.game.gameTerminated) {
-//             code.win = 0;
-//         }
-//         else {
-//             code.win = Number((code.win || 0) * (EXCHANGE_RATE)).toFixed(2);
-//             code.win = parseFloat(code.win, 10);
-//         }
-//         channel.registry.checkOut(p.id);
-// 
-//         node.say('WIN', p.id, {
-//             win: code.win,
-//             exitcode: code.ExitCode
-//         });
-// 
-//         console.log(p.id, ': ',  code.win, code.ExitCode);
-//         return [p.id, code.ExitCode || 'na', code.win,
-//                 node.game.gameTerminated];
-//     });
-// 
-//     console.log('***********************');
-//     console.log('Game ended');
-// 
-//     // Write down bonus file.
-//     filename = DUMP_DIR + 'bonus.csv';
-//     bonusFile = fs.createWriteStream(filename);
-//     bonusFile.on('error', function(err) {
-//         console.log('Error while saving bonus file: ', err);
-//     });
-//     bonusFile.write(["access", "exit", "bonus", "terminated"].join(', ') + '\n');
-//     bonus.forEach(function(v) {
-//         bonusFile.write(v.join(', ') + '\n'); 
-//     });
-//     bonusFile.end();
-// 
-//     // Dump all memory.
-//     node.game.memory.save(DUMP_DIR + 'memory_all.json');
-// }
-
 function endgame() {
-    var out;
-    var EXCHANGE_RATE;
-
-    EXCHANGE_RATE = settings.EXCHANGE_RATE_INSTRUCTIONS / settings.COINS;;
 
     console.log('FINAL PAYOFF PER PLAYER');
     console.log('***********************');
 
-    out = gameRoom.computeBonus({
+    gameRoom.computeBonus({
         say: true,  // default false
         dump: true,  // default false
-        print: true, // default false
-        cb: function(info, player) {
-            info.partials = ['20', '10', '-1', 2, 71];
-        }
+        print: true // default false
+// Optional. Pre-process the results of each player.
+//         cb: function(info, player) {
+//             // The sum of partial results is diplayed before the total.
+//             info.partials = [ 10, -1, 7];
+//         }
     });
-
-    console.log(out);
     
     // Dump all memory.
     node.game.memory.save('memory_all.json');
@@ -199,11 +130,13 @@ function notEnoughPlayers() {
 }
 
 function reconnectUltimatum(p, reconOptions) {
-    var offer, matches, other, role, bidder;
-    // Get all current matches.
-    matches = node.game.matcher.getMatchObject(0);
-    other = matches[p.id];
-    role = node.game.roleMapper.getRole(p.id);
+    var offer, setup, other, role, bidder;
+
+    // Get old setup for re-connecting player.
+    setup = node.game.matcher.getSetupFor(p.id);
+
+    other = setup.partner;
+    role = setup.role;
 
     if (!reconOptions.plot) reconOptions.plot = {};
     reconOptions.role = role;
