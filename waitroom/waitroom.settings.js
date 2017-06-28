@@ -1,5 +1,12 @@
 /**
- * Standard Waiting Room settings.
+ * # Waiting Room settings
+ * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
+ * MIT Licensed
+ *
+ * Waiting room settings
+ *
+ * http://www.nodegame.org
+ * ---
  */
 module.exports = {
     
@@ -50,7 +57,7 @@ module.exports = {
      *
      * Maximum waiting time in the waiting room
      */ 
-    MAX_WAIT_TIME: 90000,
+    MAX_WAIT_TIME: 10000,
 
     /**
      * ## START_DATE
@@ -132,4 +139,35 @@ module.exports = {
      * @see wait.room.js (nodegame-server)
      */
     // logicPath: 'path/to/a/wait.room.js'
+
+
+    // TODO: add comments.
+
+    // TEXTS:
+
+    TEXTS: {
+        
+        disconnect: 'AHAH DISCONNECTED!',
+
+        waitedTooLong: 'AHAH WAITED TOO LONG!',
+
+        notEnouthPlayers: 'AHAH NOT ENOUGH PLAYERS!',
+
+        roomClosed: 'AHAH ROOM CLOSED! CANNOT ENTER!',
+
+        tooManyPlayer: 'AHAH TOO MANY PLAYERS!',
+
+        notSelectedClosed: 'AHAH NOT SELECTED CLOSED!',
+
+        notSelectedOpen: 'AHAH NOT SELECTED OPEN!',
+
+        exitCode: 'AHAH EXIT CODE TEXT',
+    },
+    
+        
+    // SOUNDS:
+
+    SOUND: {
+        dispatch: false
+    }
 };
