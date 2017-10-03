@@ -1,53 +1,9 @@
 extends iframe-layout
 
 block extraHead
-    link(rel='stylesheet', type='text/css', href='/ultimatum/css/quiz.css')
+    link(rel='stylesheet', type='text/css', href='../css/quiz.css')
 
 block mainContent
     div(id='container_quiz')
-        h1=beforeStarting
-
-        div(id='quiz')
-            dl
-                dt
-                    strong=Q+'.1'
-                dd
-                    span(id='howMuch_result', class='quiz_result')
-                    form(name='howMuch', id='howMuch')
-                        p(class='question')=howManyCoins
-                        p
-                            - for (x = 0; x < 3; ++x)
-                                input(type='radio', name='howMuch', value=vals[x]+'')
-                                |\n
-                                =vals[x]
-                                br
-
-                dt
-                    strong=Q+'.2'
-                dd
-                    span(id='reject_result', class='quiz_result')
-                    form(name='reject', id='reject')
-                        p(class='question')=ifYouAreTheBidder
-                        p
-                            - for (x = 0; x < 4; ++x)
-                                input(type='radio', name='reject',value=x+'')
-                                |\n
-                                =howMuchYouGet[x]
-                                br
-                dt
-                    strong=Q+'.3'
-                dd
-                    span(id='disconnect_result', class='quiz_result')
-                    form(name='disconnect', id='disconnect')
-                        p(class='question')=considerTheFollowing
-                        p
-                            - for(x = 1; x < 5; ++x)
-                                input(type='radio', name='disconnect', value=x+'')
-                                |\n
-                                =disconnect[x-1]
-                                br
-            div(id='done_box')
-                button(onclick='javascript:parent.node.done();', id='submitQuiz', class='btn btn-lg btn-primary')!=clickHere+'<br>'
-                    =' '+correctAnswers+' '
-                    span(id='answers_counter') 0 / 3
-    script(src='../js/quiz.js')
+       h1=title
+       div(id='quiz')

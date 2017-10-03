@@ -87,7 +87,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // game folder. However, they can also be loaded from the
         // views/ directory (if not found in public/).
         /////////////////////////////////////////////////////////////
-        frame: 'quiz2.html', // ('quiz.html' to have forms in html)
+        frame: 'quiz.html',
         cb: function() {
             var w, qt, t;
             t = this.settings.treatmentName;
@@ -162,15 +162,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //      sent to server.
         //   3- Upon exiting the step, the widget will be destroyed.
         //
-        // If specified as an object, additional options can be set.
-        // For example:
+        // As a string, it just includes the name of the widget:
+        //
+        // ```
+        // widget: 'MoodGauge'
+        // ```
+        //
+        // As an object, additional options can be set:
         //
         // ```
         // widget: {
         //     name: 'MoodGauge',
         //     id: 'myid',
         //     ref: 'myref', // It will be added as node.game[ref]
-        //     options: { ... },
+        //     options: { ... }, // Options passed to `node.widgets.append()`
         //     append: false,
         //     checkAnswers: false,
         //     root: ...
@@ -178,7 +183,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // }
         // ```
         //////
-        widget: 'MoodGauge'
+        widget: {
+            name: 'MoodGauge',
+            options: {
+                panel: false,
+                title: false
+            }
+        }
     });
 
     stager.extendStage('ultimatum', {
