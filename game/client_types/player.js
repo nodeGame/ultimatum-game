@@ -373,6 +373,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             name: 'EndScreen',
             root: 'body',
             options: {
+                panel: false,
                 title: false,
                 showEmailForm: true,
                 email: { errString: 'Please enter a valid email and retry' },

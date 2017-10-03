@@ -28,13 +28,19 @@ function init() {
 
         node.game.rounds = node.widgets.append('VisualRound', header, {
             displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
-            stageOffset: 1
+            stageOffset: 1,
+            panel: false,
+            title: false
         });
 
-        node.game.visualTimer = node.widgets.append('VisualTimer', header);
+        node.game.visualTimer = node.widgets.append('VisualTimer', header, {
+            panel: false
+        });
 
         // Done button to click.
-        node.game.donebutton = node.widgets.append('DoneButton', header);
+        node.game.donebutton = node.widgets.append('DoneButton', header, {
+            panel: false
+        });
 
         // Additional debug information while developing the game.
         // node.game.debugInfo = node.widgets.append('DebugInfo', header)

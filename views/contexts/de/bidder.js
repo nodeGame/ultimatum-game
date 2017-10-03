@@ -7,7 +7,7 @@ module.exports = function(settings, headers) {
 
     return {
         "title": "Anbieter",
-        "youAre": "Sie sind der ANBIETER",
+        "youAre": "Sie sind der Anbieter",
         "makeAnOffer": "Machen Sie einem anderen Spieler ein Angebot zwischen 0 und " + coins + ".",
         "submit": "Übermitteln"
     };
