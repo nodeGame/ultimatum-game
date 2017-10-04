@@ -210,7 +210,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // stage is repeated, add it to the first step of the stage.
         ////////////////////////////////////////////////////////////
         init: function() {
-            node.game.rounds.setDisplayMode([
+            node.game.visualRound.setDisplayMode([
                 'COUNT_UP_STAGES_TO_TOTAL',
                 'COUNT_UP_ROUNDS_TO_TOTAL'
             ]);
@@ -396,7 +396,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //////////////////////////////////////////
         // nodeGame hint: the donebutton parameter
         //
-        // It is read by the DoneButton widget, and it can set the
+        // The DoneButton widget reads this: it can set
         // the text on the button, or disable it (false).
         /////////////////
         donebutton: false
@@ -404,7 +404,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('questionnaire', {
         init: function() {
-            node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
+            node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
         },
         cb: function() {
             var qt;

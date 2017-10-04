@@ -25,7 +25,7 @@ function init() {
         // Uncomment to visualize the name of the stages.
         //node.game.visualStage = node.widgets.append('VisualStage', header);
 
-        node.game.rounds = node.widgets.append('VisualRound', header, {
+        node.game.visualRound = node.widgets.append('VisualRound', header, {
             displayModeNames: [ 'COUNT_UP_STAGES_TO_TOTAL' ],
             stageOffset: 1,
             panel: false,
@@ -230,8 +230,8 @@ function precache() {
         // 'bidder.html',
         // 'resp.html',
 
-        'questionnaire.html', // ('postgame.html' to have version with forms)
-        'ended.html'
+        'questionnaire.html'
+        
     ], function() {
         console.log('Precache done.');
         // Pre-Caching done; proceed to the next stage.
