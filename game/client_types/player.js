@@ -54,11 +54,36 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     ////////////////////////////////////////////////////////////
     stager.extendStep('selectLanguage', {
         frame: 'languageSelection.html',
-        cb: cbs.selectLanguage
+        cb: function() {
+            node.game.lang = node.widgets.append('LanguageSelector',
+                                                 W.getFrameDocument().body);
+        }
     });
 
-    stager.extendStep('precache', {
-        cb: cbs.precache
+    stager.extendStep('precache', {        
+        //////////////////////////////////////////////
+        // nodeGame hint:
+        //
+        // Pages can be preloaded with this method: W.preCache()
+        //
+        // The content of a URI is cached in an array, and
+        // loaded again from there when needed.
+        // Pages that embed JS code should be cached with caution.
+        /////////////////////////////////////////////
+        cb: function() {
+            W.lockScreen('Loading...');
+            console.log('pre-caching...');
+            W.preCache([
+                // Precache some pages for demonstration.
+                'languageSelection.html',
+                'quiz.html',
+                'questionnaire.html'
+            ], function() {
+                console.log('Precache done.');
+                // Pre-Caching done; proceed to the next stage.
+                node.done();
+            });
+        }
     });
 
     stager.extendStep('instructions', {

@@ -7,9 +7,7 @@
  */
 
 module.exports = {
-    init: init,
-    precache: precache,
-    selectLanguage: selectLanguage
+    init: init
 };
 
 function init() {
@@ -237,9 +235,4 @@ function precache() {
         // Pre-Caching done; proceed to the next stage.
         node.done();
     });
-}
-
-function selectLanguage() {
-    node.game.lang = node.widgets.append('LanguageSelector',
-                                         W.getFrameDocument().body);
 }
