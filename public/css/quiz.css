@@ -15,10 +15,9 @@ div#container_quiz {
 
 div#quiz {
     margin: 0 auto;
-    width: 600px;
+    width: 640px;
     text-align: left;
     padding: 10px;
-    background: #CCC;
 }
 
 .quiz_result {

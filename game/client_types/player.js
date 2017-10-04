@@ -210,8 +210,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // stage is repeated, add it to the first step of the stage.
         ////////////////////////////////////////////////////////////
         init: function() {
-            node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
-                                             'COUNT_UP_ROUNDS_TO_TOTAL']);
+            node.game.rounds.setDisplayMode([
+                'COUNT_UP_STAGES_TO_TOTAL',
+                'COUNT_UP_ROUNDS_TO_TOTAL'
+            ]);
         }
     });
 

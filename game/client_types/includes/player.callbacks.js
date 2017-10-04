@@ -1,6 +1,6 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -9,8 +9,7 @@
 module.exports = {
     init: init,
     precache: precache,
-    selectLanguage: selectLanguage,
-    endgame: endgame
+    selectLanguage: selectLanguage
 };
 
 function init() {
@@ -27,10 +26,11 @@ function init() {
         //node.game.visualStage = node.widgets.append('VisualStage', header);
 
         node.game.rounds = node.widgets.append('VisualRound', header, {
-            displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
+            displayModeNames: [ 'COUNT_UP_STAGES_TO_TOTAL' ],
             stageOffset: 1,
             panel: false,
-            title: false
+            title: false,
+            layout: 'all_horizontal'
         });
 
         node.game.visualTimer = node.widgets.append('VisualTimer', header, {
@@ -115,8 +115,6 @@ function init() {
 
     // Add other functions are variables used during the game.
 
-    this.partner = null;
-
     this.bidTimeup = function() {
         node.emit('BID_DONE', Math.floor(Math.random() * 101), true);
     };
@@ -198,11 +196,6 @@ function init() {
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
 
-    // Listeners for first two stages are put here, so that
-    // if there is a reconnection they can be executed by any
-    // step.
-
-    node.game.partner = null;
     node.game.offerReceived = null;          
 }
 
@@ -231,7 +224,7 @@ function precache() {
         // from public/ a js file must modify the content of the DOM.
         // node.game.settings.instructionsPage,
 
-        'quiz2.html', // ('quiz.html' to have version with forms).
+        'quiz.html',
 
         // Not cached (for demonstration).
         // 'bidder.html',
@@ -249,24 +242,4 @@ function precache() {
 function selectLanguage() {
     node.game.lang = node.widgets.append('LanguageSelector',
                                          W.getFrameDocument().body);
-}
-
-function endgame() {
-    this.visualTimer.switchActiveBoxTo(this.visualTimer.mainBox);
-    this.visualTimer.waitBox.hideBox();
-    this.visualTimer.setToZero();
-    node.on.data('WIN', function(msg) {
-        var win, exitcode, codeErr;
-        var root;
-        root = W.getElementById('container');
-        codeErr = 'ERROR (code not found)';
-        win = msg.data && msg.data.win || 0;
-        exitcode = msg.data && msg.data.exitcode || codeErr;
-        W.writeln('', root);
-        W.writeln('', root);
-        W.writeln('Your bonus in this game is: ' + win, root);
-        W.writeln('Your exitcode is: ' + exitcode, root);
-    });
-
-    console.log('Game ended');
 }
