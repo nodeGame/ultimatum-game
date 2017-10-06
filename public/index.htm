@@ -5,50 +5,11 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/javascripts/nodegame-full.js" charset="utf-8"></script>
 <link rel="stylesheet" href="/lib/bootstrap/bootstrap.min.css" />
-<link rel='stylesheet' href='/stylesheets/nodegame.css'></link>
-<link rel='stylesheet' href='/stylesheets/fullheight.css'></link>
-<link rel='stylesheet' href='/stylesheets/noscript.css'></link>
-<link rel='stylesheet' href='css/index.css'></link>
+<link rel="stylesheet" href="/stylesheets/nodegame.css"></link>
 <!-- end -->
 <body>
 <noscript>
   Sorry, you need to enable javascript in order to play this game.
 </noscript>
-<script>
-  window.onload = function () {
-    // Configuring nodegame.
-    // All these properties can get overwritten by remoteSetup from server.
-    node.setup('nodegame', {
-      // HOST needs to be specified only
-      // if this file is located in another server
-      // host: http://myserver.com,
-      verbosity: 10,
-      window: {
-        promptOnleave: false,
-        noEscape: true // Defaults TRUE
-      },
-      env: {
-        auto: false,
-        debug: false
-      },
-      events: {
-        dumpEvents: false, // output to console all fired events
-        history: false // keep a record of all fired events
-      },
-      socket: {
-        type: 'SocketIo', // for remote connections
-        reconnect: false
-      }
-    });
-
-    // Connecting to waiting room.
-    if (location.search) {
-      // Pass query arguments on.
-      node.connect({ query: location.search.substr(1) });
-    }
-    else {
-      node.connect();
-    }
-  }
-</script>
+<script src="js/index.js" charset="utf-8"></script>
 </body>

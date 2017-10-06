@@ -126,7 +126,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             // Here we use the `ChoiceManager` widget to create a quiz page.
             ////////////////////////////////////////////////////////////////
             w = node.widgets;
-            this.quiz = w.append('ChoiceManager', W.getElementById('quiz'), {
+            this.quiz = w.append('ChoiceManager', W.gid('quiz'), {
                 id: 'quizzes',
                 title: false,
                 forms: [
@@ -267,7 +267,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 frame: 'bidder.html',
                 cb: function() {
                     var that, b;
-                    b = W.getElementById('submitOffer');
+                    b = W.gid('submitOffer');
 
                     //////////////////////////////////////////////
                     // nodeGame hint: context
@@ -283,12 +283,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     that = this;
                     b.onclick = function() {
                         var offer, value;
-                        offer = W.getElementById('offer');
+                        offer = W.gid('offer');
                         value = that.isValidBid(offer.value);
                         if (value === false) {
                             W.writeln('Please enter a number between 0 and ' +
                                       node.game.settings.COINS,
-                                      W.getElementById('container'));
+                                      W.gid('container'));
                             return;
                         }
 
@@ -351,13 +351,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     W.show('offered');
 
                     node = this.node;
-                    accept = W.getElementById('accept');
+                    accept = W.gid('accept');
 
                     accept.onclick = function() {
                         node.emit('RESPONSE_DONE', 'ACCEPT');
                     };
 
-                    reject = W.getElementById('reject');
+                    reject = W.gid('reject');
                     reject.onclick = function() {
                         node.emit('RESPONSE_DONE', 'REJECT');
                     };
@@ -367,7 +367,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 cb: function() {
                     var node, root;
                     node = this.node;
-                    root = W.getElementById('container');
+                    root = W.gid('container');
                     //////////////////////////////////////////////
                     // nodeGame hint:
                     //
@@ -429,13 +429,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('questionnaire', {
         init: function() {
-            node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
+            node.game.visualRound.setDisplayMode([
+                'COUNT_UP_STAGES_TO_TOTAL'
+            ]);
         },
         cb: function() {
             var qt;
             qt = this.questTexts;
             this.quest = node.widgets.append('ChoiceTable',
-                                             W.getElementById('quiz'),
+                                             W.gid('quiz'),
                                              {
                                                  id: 'quest',
                                                  mainText: qt.mainText,
@@ -446,7 +448,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                                                  orientation: 'v'
                                              });
         },
-        frame: 'questionnaire.html', // ('postgame.html' to have forms in html)
+        frame: 'questionnaire.html',
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the done callback
         //
