@@ -147,27 +147,27 @@ module.exports = {
 
     TEXTS: {
         
-        disconnect: 'AHAH DISCONNECTED!',
-
-        waitedTooLong: 'AHAH WAITED TOO LONG!',
-
-        notEnouthPlayers: 'AHAH NOT ENOUGH PLAYERS!',
-
-        roomClosed: 'AHAH ROOM CLOSED! CANNOT ENTER!',
-
-        tooManyPlayer: 'AHAH TOO MANY PLAYERS!',
-
-        notSelectedClosed: 'AHAH NOT SELECTED CLOSED!',
-
-        notSelectedOpen: 'AHAH NOT SELECTED OPEN!',
-
-        exitCode: 'AHAH EXIT CODE TEXT',
+//         disconnect: 'Custom string: DISCONNECTED!',
+// 
+//         waitedTooLong: 'Custom string: WAITED TOO LONG!',
+// 
+//         notEnoughPlayers: 'Custom string: NOT ENOUGH PLAYERS!',
+// 
+//         roomClosed: 'Custom string: ROOM CLOSED! CANNOT ENTER!',
+// 
+//         tooManyPlayer: 'Custom string: TOO MANY PLAYERS!',
+// 
+//         notSelectedClosed: 'Custom string: NOT SELECTED CLOSED!',
+// 
+//         notSelectedOpen: 'Custom string: NOT SELECTED OPEN!',
+// 
+//         exitCode: 'Custom string: EXIT CODE TEXT',
     },
     
         
     // SOUNDS:
 
     SOUND: {
-        dispatch: false
+//        dispatch: false
     }
 };
