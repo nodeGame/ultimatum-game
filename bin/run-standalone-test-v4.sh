@@ -15,6 +15,6 @@ set -e
 # Go to the nodegame directory and run the automatic game.
 cd ../..
 node test/launcher-autoplay.js ultimatum
-cd games/ultimatum
+cd games/ultimatum-game
 
 npm test
