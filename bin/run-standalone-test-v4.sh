@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ultimatum automatic test run
-# Copyright(c) 2015 Stefano Balietti
+# Copyright(c) 2017 Stefano Balietti
 # MIT Licensed
 #
 # Run this from inside the ultimatum directory inside nodegame/games/:
