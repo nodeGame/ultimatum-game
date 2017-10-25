@@ -113,15 +113,17 @@ function endgame() {
         say: true,  // default false
         dump: true,  // default false
         print: true // default false
-// Optional. Pre-process the results of each player.
-//         cb: function(info, player) {
-//             // The sum of partial results is diplayed before the total.
-//             info.partials = [ 10, -1, 7];
-//         }
+        // Optional. Pre-process the results of each player.
+        // cb: function(info, player) {
+        // // The sum of partial results is diplayed before the total.
+        //         info.partials = [ 10, -1, 7];
+        // }
     });
     
     // Dump all memory.
     node.game.memory.save('memory_all.json');
+
+    node.done();
 }
 
 
