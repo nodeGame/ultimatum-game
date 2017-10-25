@@ -110,9 +110,9 @@ function endgame() {
     console.log('***********************');
 
     gameRoom.computeBonus({
-        say: true,  // default false
+        say: true,   // default false
         dump: true,  // default false
-        print: true // default false
+        print: true  // default false
         // Optional. Pre-process the results of each player.
         // cb: function(info, player) {
         // // The sum of partial results is diplayed before the total.
