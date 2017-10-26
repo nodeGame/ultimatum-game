@@ -7,12 +7,11 @@ var settings = require('./settings.js');
 var gameSettings = require('../game/game.settings.js');
 
 var numPlayers = settings.numPlayers;
-var baseSessionId = gameSettings.SESSION_ID;
 
+var dataDir;
 var numGames, nRounds;
 var filePaths = [];
 var dbs = [];
-var gameSettings;
 
 // TODO: Assuming two players per game.
 if (numPlayers % 2 != 0) {
@@ -22,14 +21,25 @@ if (numPlayers % 2 != 0) {
 numGames = numPlayers / 2;
 nRounds = gameSettings.REPEAT;
 
-var dataDir = path.resolve(__dirname, '../', 'data/') + '/';
+dataDir = path.resolve(__dirname, '../', 'data') + path.sep;
 
-// Generate memory file pathnames.
-for (var i = 0; i < numGames; ++i) {
-    filePaths.push(dataDir + (baseSessionId + i) + '/memory_all.json');
-}
+// Load all room directories.
+(function(dataDir) {
+    var files, file, tokens, roomNum, maxRoomNum;
+    var i, len;
 
-// console.log(baseSessionId);
+    maxRoomNum = 0;
+  
+    files = fs.readdirSync(dataDir);
+
+    i = -1, len = files.length;
+    for ( ; ++i < len ; ) {
+        file = path.join(dataDir, files[i]);
+        if (fs.lstatSync(file).isDirectory()) {
+            filePaths.push(path.join(file, 'memory_all.json'));
+        }
+    }
+})(dataDir);
 
 describe(numGames + ' memory files "data/*/memory_all.json"', function() {
     it('should exist', function() {
@@ -44,8 +54,8 @@ describe(numGames + ' memory files "data/*/memory_all.json"', function() {
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
             db = new NDDB();
             db.loadSync(filePaths[gameNo]);
-            db.size().should.be.above(0,
-                'Empty DB in game '+(gameNo+1)+'/'+numGames+'!');
+            db.size().should.be.above(0, 'Empty DB in game ' +
+                                      (gameNo+1) + '/' + numGames + '!');
             dbs.push(db);
         }
     });
@@ -58,7 +68,7 @@ describe('File contents', function() {
 
         // 2 precache, 2 languageSel, 2 instr, 2 quiz, 2 quest, 2 mood = 12
         // REPEAT * ultimatum (2 + 2 = 4)
-        nSets = 12 + (4 * gameSettings.REPEAT);
+        nSets = 12 + (4 * nRounds);
 
         // TODO: Assuming two players.
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
@@ -110,7 +120,7 @@ describe('Bidding rounds', function() {
         var offer, response;
 
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
-            for (i = 1; i <= gameSettings.REPEAT; ++i) {
+            for (i = 1; i <= nRounds; ++i) {
                 roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
                 // Get offer and response.
@@ -142,7 +152,7 @@ describe('Bidding rounds', function() {
         var bidderId, confirmBidderId, respondentId, responseObj;
 
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
-            for (i = 1; i <= gameSettings.REPEAT; ++i) {
+            for (i = 1; i <= nRounds; ++i) {
                 roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
                 // Check role IDs.
