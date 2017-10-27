@@ -37,7 +37,7 @@ module.exports = {
     //      to execute when the timer expires. If _timeup_ is not set,
     //      property _timeup_ of the game step will be used.
     TIMER: {
-        selectLanguage: 3000009,
+        selectLanguage: 30000,
         instructions: 90000,
         quiz: 60000,
         mood: 60000,
