@@ -35,5 +35,6 @@ module.exports = function(stager, settings) {
     // stager.skip('quiz');
     // stager.skip('instructions');
     // stager.skip('mood');
-    // stager.skip('ultimatum')
+    // stager.skip('ultimatum');
+    // stager.skip('endgame');
 };

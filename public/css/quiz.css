@@ -41,3 +41,14 @@ table#reject td, table#disconnect td {
 table.choicetable td {
     font-weight: normal;
 }
+
+table#quest {
+  margin: 20px 0;
+  width: 100%;
+}
+
+
+textarea#quest_text {
+  margin: 0;
+  width: 100%;
+}
