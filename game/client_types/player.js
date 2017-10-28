@@ -406,10 +406,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
+        frame: 'generic.htm',
         // Another widget-step (see the mood step above).
         widget: {
             name: 'EndScreen',
-            root: 'body',
+            root: 'container',
             options: {
                 panel: false,
                 title: false,
