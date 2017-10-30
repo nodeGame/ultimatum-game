@@ -19,7 +19,7 @@ module.exports = function(stager, settings) {
         .next('endgame')
         .gameover();
 
-    // Divide stage ultimatum in 3 steps.
+    // Divide stage ultimatum in steps.
 
     stager.extendStage('ultimatum', {
         steps: [
