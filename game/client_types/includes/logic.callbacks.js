@@ -122,10 +122,6 @@ function endgame() {
     
     // Dump all memory.
     node.game.memory.save('memory_all.json');
-
-    //setTimeout(function() {
-        node.done();
-    //}, 10000);
 }
 
 

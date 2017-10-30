@@ -425,7 +425,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // The DoneButton widget reads this: it can set
         // the text on the button, or disable it (false).
         /////////////////
-        donebutton: false
+        donebutton: false,
+        // Callback using for testing purposes, ignore it
+        cb: function() {
+            console.log('PHANTOMJS EXITING');
+        }
     });
 
     stager.extendStep('questionnaire', {
