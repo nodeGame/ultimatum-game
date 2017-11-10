@@ -1,6 +1,6 @@
 /**
  * # Autoplay code for Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * Handles automatic play.
@@ -10,8 +10,6 @@
 
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
     var ngc =  require('nodegame-client');
 
     var game, stager;
