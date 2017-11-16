@@ -32,10 +32,10 @@ module.exports = {
      *
      * If set, client must exchange messages with server "quickly enough"
      */ 
-    speedTest: {
-        messages: 10,
-        time: 1000
-    },
+    // speedTest: {
+    //     messages: 10,
+    //     time: 1000
+    // },
     
     /**
      * ## cookieSupport
