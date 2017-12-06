@@ -28,12 +28,12 @@ module.exports = {
     maxExecTime: 6000,
 
     /**
-     * ## maxExecTime
+     * ## speedTest
      *
      * If set, client must exchange messages with server "quickly enough"
      */ 
     speedTest: {
-        messages: 10,
+        messages: 1,
         time: 1000
     },
 
