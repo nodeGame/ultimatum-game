@@ -21,7 +21,7 @@ module.exports = function(settings, stages) {
     // and printed to screen, and the game will continue.
     game.debug = true;
 
-    game.verbosity = 1;
+    game.verbosity = -1;
 
     game.window = {
         promptOnleave: !game.debug,
