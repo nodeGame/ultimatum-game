@@ -35,83 +35,71 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node = this.node;
 
         this.other = null;
-
-        node.on('BID_DONE', function(offer, to) {
-            node.set('offer', offer);
-            node.say('OFFER', to, offer);
-        });
-
-        node.on('RESPONSE_DONE', function(response, offer, from) {
-            node.info(response + ' ' + offer + ' ' + from);
-            node.set('response', {
-                response: response,
-                value: offer,
-                from: from
-            });
-            node.say(response, from, response);
-
-            node.done();
-        });
-
-        this.randomAccept = function(offer, other) {
-            var accepted;
-            accepted = Math.round(Math.random());
-            node.info('randomaccept');
-            node.info(offer + ' ' + other);
-            if (accepted) {
-                node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
-            }
-            else {
-                node.emit('RESPONSE_DONE', 'REJECT', offer, other);
-            }
-        };
     });
 
     // Set the default step rule for all the stages.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    stager.extendStep('ultimatum', {
-        cb: function() {
-            var that, node, other;
+    stager.setDefaultCallback(function() {
+            this.node.timer.randomDone(2000);   
+    });
 
-            that = this;
-            node = this.node;
+    stager.extendStep('bidder', {
+        role: function() { return this.role; },
+        roles: {
+            BIDDER: {
+                cb: function() {
+                    var node;
+                    node = this.node;
+                    setTimeout(function() {
+                        node.emit('BID_DONE', Math.floor(Math.random() * 101));
+                    }, 2000);
+                }
+            },
+            RESPONDENT: {
+                cb: function() {
+                    node.on.data('OFFER', function(msg) {
+                        node.done();
+                    });
+                }
+            }
+        }
+    });
 
-            // Load the BIDDER interface.
-            node.on.data('BIDDER', function(msg) {
-                node.info('RECEIVED BIDDER!');
-                other = msg.data.other;
-                node.set('ROLE', 'BIDDER');
-                
-                setTimeout(function() {
-                    node.emit('BID_DONE',
-                              Math.floor(Math.random() * 101),
-                              other);
-                }, 2000);
+    stager.extendStep('respondent', {
+        role: function() { return this.role; },
+        roles: {
+            RESPONDENT: {
+                cb: function() {
+                    var node, option;
+                    
+                    that = this;
+                    node = this.node;
+                    if (Math.round(Math.random())) {
+                        option = 'ACCEPT';
+                    }
+                    else {
+                        option = 'REJECT';
+                    }
+                    node.emit('RESPONSE_DONE', option);
+                }
+            },
+            BIDDER: {
+                cb: function() {
+                    var node;
+                    node = this.node;
+                    
+                    node.on.data('ACCEPT', function(msg) {
+                        node.info(' Your offer was accepted.');
+                        node.done();
+                    });
 
-                node.on.data('ACCEPT', function(msg) {
-                    node.info(' Your offer was accepted.');
-                    node.done();
-                });
-
-                node.on.data('REJECT', function(msg) {
-                    node.info(' Your offer was rejected.');
-                    node.done();
-                });
-            });
-
-            // Load the respondent interface.
-            node.on.data('RESPONDENT', function(msg) {
-                node.info('RECEIVED RESPONDENT!');
-                other = msg.data.other;
-                node.set('ROLE', 'RESPONDENT');
-
-                node.on.data('OFFER', function(msg) {
-                    that.randomAccept(msg.data, other);
-                });
-            });
-
-            node.info('Ultimatum');
+                    node.on.data('REJECT', function(msg) {
+                        node.info(' Your offer was rejected.');
+                        node.done();
+                    });
+                }
+            }
         }
     });
 
