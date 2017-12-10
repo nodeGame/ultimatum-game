@@ -49,15 +49,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         roles: {
             BIDDER: {
                 cb: function() {
-                    var node;
+                    var node, amount;
                     node = this.node;
+                    amount = Math.floor(Math.random() * 101);
                     setTimeout(function() {
-                        node.emit('BID_DONE', Math.floor(Math.random() * 101));
+                        node.say('OFFER', node.game.partner, amount);
+                        node.done({ offer: amount});
                     }, 2000);
                 }
             },
             RESPONDENT: {
                 cb: function() {
+                    var node;
+                    node = this.node;
+
                     node.on.data('OFFER', function(msg) {
                         node.done();
                     });
@@ -68,20 +73,26 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('respondent', {
         role: function() { return this.role; },
+        partner: function() { return this.partner; },
         roles: {
             RESPONDENT: {
                 cb: function() {
-                    var node, option;
+                    var node, response;
                     
                     that = this;
                     node = this.node;
                     if (Math.round(Math.random())) {
-                        option = 'ACCEPT';
+                        response = 'ACCEPT';
                     }
                     else {
-                        option = 'REJECT';
+                        response = 'REJECT';
                     }
-                    node.emit('RESPONSE_DONE', option);
+                    node.say(response, node.game.partner, response);
+                    node.done({
+                        value: node.game.offerReceived,
+                        responseTo: node.game.partner,
+                        response: response
+                    });
                 }
             },
             BIDDER: {
