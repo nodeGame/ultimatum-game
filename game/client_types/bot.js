@@ -1,11 +1,9 @@
 /**
  * # Bot code for Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * Code for a bot playing the ultimatum game randomly.
- *
- * TODO: Update code!
  * 
  * http://www.nodegame.org
  */
@@ -22,8 +20,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     var channel = gameRoom.channel;
     var logic = gameRoom.node;
-
-    // TODO: check if stager should be recreated as in autoplay.
 
     // Specify init function, and extend default stages.
     ////////////////////////////////////////////////////
@@ -104,7 +100,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         node.info(' Your offer was accepted.');
                         node.done();
                     });
-
                     node.on.data('REJECT', function(msg) {
                         node.info(' Your offer was rejected.');
                         node.done();
