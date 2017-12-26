@@ -62,18 +62,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // that seems unresponsive. This can help recover from minor errors.
     // Clients that fail to respond to the push are eventually disconnected.
     ////////////////////////////////////////////////////////////////////////
-    stager.setDefaultProperty('pushClients', true);
-    
-//     stager.extendStep('selectLanguage', {     
-//         cb: function() {
-//             // Storing the language setting.
-//             node.on.data('mylang', function(msg) {
-//                 if (msg.data && msg.data.name !== 'English') {
-//                     channel.registry.updateClient(msg.from, {lang:msg.data});
-//                 }
-//             });
-//         }
-//     });
+    stager.setDefaultProperty('pushClients', true);    
 
     stager.extendStep('bidder', {
         ////////////////////////////////////

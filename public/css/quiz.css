@@ -15,7 +15,7 @@ div#container_quiz {
 
 div#quiz {
     margin: 0 auto;
-    width: 640px;
+    width: 42em;
     text-align: left;
     padding: 10px;
 }
@@ -29,12 +29,12 @@ div#quiz .choicemanager {
 }
 
 table#howMuch td {
-    width: 200px;
+    width: 13.5em;
 }
 
 table#reject td, table#disconnect td {
     text-align: left;
-    width: 599px;
+    width: 41em;
     padding: 5px 10px;
 }
 

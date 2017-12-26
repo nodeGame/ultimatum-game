@@ -1,55 +1,56 @@
 body {
-    font-size: 1.8em;
+  margin-top: 20px;
+  font-size: 20px;
 }
 
 div#container {
-    max-width: 650px;
-    margin: 0px auto;
+  max-width: 42em;
+  margin: 0px auto;
 }
 
 .margin-bottom {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
 
 .subtitle {
-    font-size: 20px;
-    font-style: italic;
+  font-size: 20px;
+  font-style: italic;
 }
 
 .important {
-    color: red;
-    font-weight: bold;
+  color: red;
+  font-weight: bold;
 }
 
 .question {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 input#offer, input#submitOffer {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 div#quiz .choicetable {
-    margin: 0 auto;
-    padding: 10px;
+  margin: 0 auto;
+  padding: 10px;
 }
 
 table#quest td {
-    width: 550px;
-    text-align: left;
-    padding: 5px 10px;
+  width: 550px;
+  text-align: left;
+  padding: 5px 10px;
 }
 
 div.choicetable span.choicetable-maintext {
-    font-weight: bold;
-    margin-bottom: 20px;
-    font-size:  18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size:  18px;
 }
 
 div.choicetable textarea {
-    width: 550px;
-    text-align: left;
-    padding: 5px 10px;
+  width: 550px;
+  text-align: left;
+  padding: 5px 10px;
 }
 
 /* This causes MoodGauge to have an extra line at the bottom. */
