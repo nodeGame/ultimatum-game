@@ -1,6 +1,6 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti
+ * Copyright(c) 2018 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -24,7 +24,6 @@ function init() {
         //node.game.visualStage = node.widgets.append('VisualStage', header);
 
         node.game.visualRound = node.widgets.append('VisualRound', header, {
-            displayModeNames: [ 'COUNT_UP_STAGES_TO_TOTAL' ],
             stageOffset: 1,
             title: false
         });

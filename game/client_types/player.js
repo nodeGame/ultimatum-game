@@ -1,6 +1,6 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2018 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Handles biddings, and responses between two players.
@@ -219,27 +219,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStage('ultimatum', {
         // Disable the donebutton for this step.
-        donebutton: false,
-        /////////////////////////////////////////////////////////////
-        // nodeGame hint: the init function
-        //
-        // It is a function that is executed before the main callback,
-        // and before loading any frame.
-        //
-        // Likewise, it is possible to define an `exit` function that
-        // will be executed upon exiting the step.
-        //
-        // Notice that if the function is defined at the level of the
-        // stage, it will be executed only once upone entering the
-        // stage. If, you need to have it executed every round the
-        // stage is repeated, add it to the first step of the stage.
-        ////////////////////////////////////////////////////////////
-        init: function() {
-            node.game.visualRound.setDisplayMode([
-                'COUNT_UP_STAGES_TO_TOTAL',
-                'COUNT_UP_ROUNDS_TO_TOTAL'
-            ]);
-        }
+        donebutton: false
     });
 
     stager.extendStep('bidder', {
@@ -302,7 +282,24 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     };
                 }
             },
-            RESPONDENT: {
+            RESPONDENT: {                
+                /////////////////////////////////////////////////////////////
+                // nodeGame hint: the init function
+                //
+                // It is a function that is executed before the main callback,
+                // and before loading any frame.
+                //
+                // Likewise, it is possible to define an `exit` function that
+                // will be executed upon exiting the step.
+                //
+                // Notice that if the function is defined at the level of the
+                // stage, it will be executed only once upon entering the
+                // stage. If, you need to have it executed every round the
+                // stage is repeated, add it to the first step of the stage.
+                //
+                // There is also an `exit` callback, executed when exiting
+                // the stage or step.
+                ////////////////////////////////////////////////////////////
                 init: function() {
                     node.game.offerReceived = null;
                 },
@@ -314,7 +311,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         node.game.offerReceived = msg.data;
                         node.done();
                     });
-                }
+                },
+                timeup: null
             },
             SOLO: {
                 frame: 'solo.html',
@@ -346,11 +344,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     node.game.resTimeup();
                 },
                 cb: function() {
-                    var accept, reject, node;
+                    var accept, reject;
                     W.setInnerHTML('theoffer', this.offerReceived);
                     W.show('offered');
 
-                    node = this.node;
                     accept = W.gid('accept');
 
                     accept.onclick = function() {
@@ -365,9 +362,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             },
             BIDDER: {
                 cb: function() {
-                    var node, root;
-                    node = this.node;
+                    var root;
                     root = W.gid('container');
+
                     //////////////////////////////////////////////
                     // nodeGame hint:
                     //
@@ -395,7 +392,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         W.write(' Your offer was rejected.', root);
                         node.timer.randomDone(3000);
                     });
-                }
+                },
+                timeup: null
             },
             SOLO: {
                 cb: function() {
@@ -433,11 +431,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('questionnaire', {
-        init: function() {
-            node.game.visualRound.setDisplayMode([
-                'COUNT_UP_STAGES_TO_TOTAL'
-            ]);
-        },
         cb: function() {
             var qt;
             qt = this.questTexts;
