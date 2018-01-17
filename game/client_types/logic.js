@@ -1,6 +1,6 @@
 /**
  * # Logic code for Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2018 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
