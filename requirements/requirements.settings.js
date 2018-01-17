@@ -34,7 +34,7 @@ module.exports = {
      */ 
     speedTest: {
         messages: 1,
-        time: 1000
+        time: 2000
     },
     
     /**
