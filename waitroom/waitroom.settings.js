@@ -395,7 +395,7 @@ module.exports = {
         // exitCode: 'Custom string: EXIT CODE TEXT',
     },
     
-    /** ### TEXTS
+    /** ### SOUNDS
      *
      * Collections of sounds played when given events occurs
      *
