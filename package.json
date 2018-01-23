@@ -2,6 +2,7 @@
   "name": "ultimatum-game",
   "channelName": "ultimatum",
   "description": "Plays an ultimatum game with nodegame",
+  "url": "https://github.com/nodeGame/ultimatum-game",
   "version": "4.0.0",
   "author": {
     "name": "Stefano Balietti",
