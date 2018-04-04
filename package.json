@@ -10,6 +10,7 @@
     "email": "ste@nodegame.org",
     "url": "http://stefanobalietti.com"
   },
+  "icon": "group_work",
   "main": "./index.html",
   "keywords": [
     "nodegame",
