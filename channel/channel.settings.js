@@ -26,7 +26,7 @@ module.exports = {
     accessDeniedUrl: '/ultimatum/unauth.htm',
 
     enableReconnections: true,
-    
+
     // If TRUE, every newly created room is assigned an own subdirectory
     // inside the game data/ dir. Default: TRUE
     // roomOwnDataDir: true
@@ -39,6 +39,14 @@ module.exports = {
     // desired length. For example, if `roomCounterChars` is equal to 6 and
     // the current roomCounter value is 123, then room name is: '000123'.
     // Default: 6
-    // roomCounterChars: 6
+    // roomCounterPadChars: 6
+
+    // Reserved for future versions:
+
+    // If set, this symbol is inserted between the padded room counter and
+    // and the word 'room'.
+    // Default: ''
+    // roomCounterSeparator: '@'
+
 };
 
