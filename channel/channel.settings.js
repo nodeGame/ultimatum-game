@@ -54,5 +54,9 @@ module.exports = {
     // Default: ''
     // roomCounterSeparator: '@'
 
+    // If TRUE, channel is served from /
+    // Notice! Other games might not be available and need to adapt
+    // manually access point in index.htm
+    defaultChannel: false
 };
 
