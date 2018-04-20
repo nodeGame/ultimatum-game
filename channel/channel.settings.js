@@ -10,7 +10,7 @@
  */
 module.exports = {
 
-    // alias: 'u1',
+    // alias: 'myexperiment',
 
     playerServer: 'ultimatum',
 
@@ -25,7 +25,13 @@ module.exports = {
     // (defaults: "/pages/accessdenied.htm")
     accessDeniedUrl: '/ultimatum/unauth.htm',
 
+    // If TRUE, reconnections are enabled (authorization or noAuth cookie
+    // necessary).
     enableReconnections: true,
+
+    // If TRUE, a cookie is set even without authorization. Opening
+    // multiple browser tabs will cause a disconnection in other ones. 
+    // noAuthCookie: true,
 
     // If TRUE, every newly created room is assigned an own subdirectory
     // inside the game data/ dir. Default: TRUE
