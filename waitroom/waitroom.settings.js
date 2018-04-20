@@ -418,6 +418,6 @@ module.exports = {
          */
         // dispatch: false
     },
-
+    
     ALLOW_PLAY_WITH_BOTS: true
 };

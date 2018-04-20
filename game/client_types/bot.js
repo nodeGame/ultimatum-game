@@ -1,11 +1,9 @@
 /**
  * # Bot code for Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * Code for a bot playing the ultimatum game randomly.
- *
- * TODO: Update code!
  * 
  * http://www.nodegame.org
  */
@@ -23,65 +21,81 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var logic = gameRoom.node;
 
-    // TODO: check if stager should be recreated as in autoplay.
-
     // Specify init function, and extend default stages.
     ////////////////////////////////////////////////////
 
-    stager.setOnInit(function() {
-        var that, node;
-        
-        that = this;
-        node = this.node;
+    // Set the default step rule for all the stages.
+    stager.setDefaultStepRule(stepRules.WAIT);
 
-        node.on('BID_DONE', function(value, notify) {
-            var root, time, offer, submitOffer, timeup;        
-
-            timeup = node.game.timer.isTimeup();
-
-            // Save references.
-            node.game.lastOffer = value;
-            node.game.lastTimup = timeup;
-            node.game.lastTime = time;
-
-            if (notify !== false) {
-                // Notify the other player.
-                node.say('OFFER', node.game.partner, node.game.lastOffer);
-
-                // Notify the server.
-                node.done({ offer: value });
-            }
-
-        });
-
-        node.on('RESPONSE_DONE', function(response) {
-
-            // Tell the other player own response.
-            node.say(response, node.game.partner, response);
-            node.done({
-                value: node.game.offerReceived,
-                responseTo: node.game.partner,
-                response: response
-            });
-        });
-        
-        this.randomAccept = function(offer, other) {
-            var res;
-            res = Math.round(Math.random()) > 0.5 ? 'ACCEPT' : 'REJECT';
-            node.emit('RESPONSE_DONE', res, offer, other);
-        };
+    stager.setDefaultCallback(function() {
+        this.node.timer.randomDone(2000);   
     });
 
-    stager.extendStep('ultimatum', {
+    stager.extendStep('bidder', {
+        role: function() { return this.role; },
         roles: {
-            BIDDER: function() {
-    	        var that, node, other;
+            BIDDER: {
+                cb: function() {
+                    var node, amount;
+                    node = this.node;
+                    amount = Math.floor(Math.random() * 101);
+                    setTimeout(function() {
+                        node.say('OFFER', node.game.partner, amount);
+                        node.done({ offer: amount});
+                    }, 2000);
+                }
+            },
+            RESPONDENT: {
+                cb: function() {
+                    var node;
+                    node = this.node;
 
-            	that = this;
-            	node = this.node;
+                    node.on.data('OFFER', function(msg) {
+                        node.done();
+                    });
+                }
+            }
+        }
+    });
 
-
-            	node.info('Ultimatum');
+    stager.extendStep('respondent', {
+        role: function() { return this.role; },
+        partner: function() { return this.partner; },
+        roles: {
+            RESPONDENT: {
+                cb: function() {
+                    var node, response;
+                    
+                    that = this;
+                    node = this.node;
+                    if (Math.round(Math.random())) {
+                        response = 'ACCEPT';
+                    }
+                    else {
+                        response = 'REJECT';
+                    }
+                    node.say(response, node.game.partner, response);
+                    node.done({
+                        value: node.game.offerReceived,
+                        responseTo: node.game.partner,
+                        response: response
+                    });
+                }
+            },
+            BIDDER: {
+                cb: function() {
+                    var node;
+                    node = this.node;
+                    
+                    node.on.data('ACCEPT', function(msg) {
+                        node.info(' Your offer was accepted.');
+                        node.done();
+                    });
+                    node.on.data('REJECT', function(msg) {
+                        node.info(' Your offer was rejected.');
+                        node.done();
+                    });
+                }
             }
         }
     });
