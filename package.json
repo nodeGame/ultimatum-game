@@ -32,7 +32,7 @@
   },
   "engines": {
     "node": "*",
-    "nodegame": ">= 3.5.0"
+    "nodegame": ">= 4.0.0"
   },
   "homepage": "http://nodegame.org",
   "scripts": {
