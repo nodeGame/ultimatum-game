@@ -1,27 +1,23 @@
 sudo: false
 language: node_js
-node_js: 
-  - '4.5'
+node_js:
+  - 6
+  - 7
+  - 8
+
 before_install:
 # Get installer script.
-  - cd bin
-  - wget https://github.com/nodeGame/nodegame/raw/master/bin/install-nodegame-for-module.sh
-  - chmod a+x install-nodegame-for-module.sh
-  - cd ..
-# Make dependencies available for Ultimatum.
-  - mkdir nodegame
-  - ln -s nodegame/node_modules .
+  - wget https://github.com/nodeGame/nodegame-test/raw/master/nodegame-installer.js
+  - chmod a+x nodegame-installer.js
+
 install:
-# Get nodegame.
-  - ./bin/install-nodegame-for-module.sh -n "smoosh ya-csv"
-# Install dependencies.
-  - npm install
-# Register this Ultimatum game in nodegame.
-  - ln -s ../.. nodegame/games/ultimatum
+  - node nodegame-installer.js @dev --install-dir node_modules --no-spinner --branch v4
+  - npm install -g should
+  - npm install -g mocha
+
 script:
-# Run autoplay-game to get memory dump.
-  - cd nodegame
-  - node test/launcher-autoplay.js ultimatum
-  - cd ..
-# Run tests on dump.
-  - npm test
+# Add extra tests here.
+
+# Test Ultimatum game.
+  - cd node_modules/nodegame-test/games/ultimatum-game
+  - ./bin/run-standalone-test-v4.sh

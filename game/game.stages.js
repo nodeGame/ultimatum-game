@@ -1,6 +1,6 @@
 /**
  * # Stages of the Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -19,7 +19,7 @@ module.exports = function(stager, settings) {
         .next('endgame')
         .gameover();
 
-    // Divide stage ultimatum in 3 steps.
+    // Divide stage ultimatum in steps.
 
     stager.extendStage('ultimatum', {
         steps: [
@@ -35,5 +35,6 @@ module.exports = function(stager, settings) {
     // stager.skip('quiz');
     // stager.skip('instructions');
     // stager.skip('mood');
-    // stager.skip('ultimatum')
+    // stager.skip('ultimatum');
+    // stager.skip('endgame');
 };

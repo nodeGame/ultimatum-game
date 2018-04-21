@@ -1,9 +1,10 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti
+ * Copyright(c) 2018 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Handles biddings, and responses between two players.
+ *
  * Extensively documented tutorial.
  *
  * http://www.nodegame.org
@@ -11,64 +12,38 @@
 
 var ngc = require('nodegame-client');
 var Stager = ngc.Stager;
-var stepRules = ngc.stepRules;
-var constants = ngc.constants;
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var game, cbs;
+    var cbs;
     var channel = gameRoom.channel;
     var node = gameRoom.node;
-
-    // The game object to return at the end of the function.
-    game = {};
 
     // Import other functions used in the game.
     cbs = require(__dirname + '/includes/player.callbacks.js');
 
     // Specify init function, and extend steps.
 
-
     // Init callback.
     stager.setOnInit(cbs.init);
-
-    stager.setOnGameOver(function() {
-        // Do something if you like!
-    });
 
     ////////////////////////////////////////////////////////////
     // nodeGame hint: step propreties.
     //
-    // A step is a set of properties under a common label (id),
-    // i.e. the id of the step.
+    // A step is a set of properties under a common label (id).
     //
-    // Properties can be defined at multiple levels, and those defined
-    // at higher levels are inherited by each nested step, that in
-    // turn can overwrite them.
-    //
-    // For example, if a step is missing a property, it will be looked
-    // into the enclosing stage. If it is not defined in the stage,
-    // the value set with _setDefaultProperties()_ will be used. If
-    // still not found, it will fallback to nodeGame defaults.
+    // Properties are looked up with a cascade mechanism. That is,
+    // all steps inherit the properties defined at the stage level in
+    // which they are inserted. All stages inherit the properties
+    // defined at the game level. Finally, it fallbacks on nodeGame defaults.
     //
     // The property named `cb` is one of the most important.
     //
-    // It defines the callback that will be called during the
-    // step. By default, each steps inherits an empty callback,
-    // so that it is not necessary to implement one, if the
-    // player has, for example, just to read a text.
-    //
-    // Another important property is `stepRule`
-    //
-    // A step rule is a function deciding what to do when a player has
-    // terminated a step and entered the stage level _DONE_.
-    //
-    // Some of the available step rules are:
-    //
-    //  - 'SOLO': advances through the steps freely
-    //  - 'WAIT': wait for a command from server to go to
-    //            next step (Default)
+    // It defines the callback that will be called during the step.
+    // By default, each steps inherits an empty callback, so that
+    // it is not necessary to implement the cb property, if the
+    // player has, for example, only to read a text.
     //
     // To add/modify properties use the commands:
     //
@@ -77,22 +52,38 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // `stager.setDefaultProperty`: modifies all stages and steps
     //
     ////////////////////////////////////////////////////////////
-
     stager.extendStep('selectLanguage', {
         frame: 'languageSelection.html',
-        cb: cbs.selectLanguage,
-        done: function() {
-            // The chosen language prefix will be
-            // added automatically to every call to W.loadFrame().
-            if (node.player.lang.name !== 'English') {
-                W.setUriPrefix(node.player.lang.path);
-                node.say('mylang', 'SERVER', node.player.lang);
-            }
+        cb: function() {
+            node.game.lang = node.widgets.append('LanguageSelector',
+                                                 W.getFrameDocument().body);
         }
     });
 
-    stager.extendStep('precache', {
-        cb: cbs.precache
+    stager.extendStep('precache', {        
+        //////////////////////////////////////////////
+        // nodeGame hint:
+        //
+        // Pages can be preloaded with this method: W.preCache()
+        //
+        // The content of a URI is cached in an array, and
+        // loaded again from there when needed.
+        // Pages that embed JS code should be cached with caution.
+        /////////////////////////////////////////////
+        cb: function() {
+            W.lockScreen('Loading...');
+            console.log('pre-caching...');
+            W.preCache([
+                // Precache some pages for demonstration.
+                'languageSelection.html',
+                'quiz.html',
+                'questionnaire.html'
+            ], function() {
+                console.log('Precache done.');
+                // Pre-Caching done; proceed to the next stage.
+                node.done();
+            });
+        }
     });
 
     stager.extendStep('instructions', {
@@ -101,8 +92,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //
         // The settings object is automatically populated with the
         // settings specified for the treatment chosen by the waiting
-        // room. The settings is sent to each remote client and it is
-        // available under: `node.game.settings`.
+        // room (file: game.settings.js). Settings are sent to each remote
+        // client and it is available under: `node.game.settings`.
+        /////////////////////////////////////////////////////////////
         frame: settings.instructionsPage
     });
 
@@ -119,7 +111,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Pages are loading from the public/ directory inside the
         // game folder. However, they can also be loaded from the
         // views/ directory (if not found in public/).
-        frame: 'quiz2.html', // ('quiz.html' to have forms in html)
+        /////////////////////////////////////////////////////////////
+        frame: 'quiz.html',
         cb: function() {
             var w, qt, t;
             t = this.settings.treatmentName;
@@ -131,8 +124,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             // Widgets are re-usable components with predefined methods,
             // such as: hide, highlight, disable, getValues, etc.
             // Here we use the `ChoiceManager` widget to create a quiz page.
+            ////////////////////////////////////////////////////////////////
             w = node.widgets;
-            this.quiz = w.append('ChoiceManager', W.getElementById('quiz'), {
+            this.quiz = w.append('ChoiceManager', W.gid('quiz'), {
                 id: 'quizzes',
                 title: false,
                 forms: [
@@ -193,53 +187,49 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //      sent to server.
         //   3- Upon exiting the step, the widget will be destroyed.
         //
-        // If specified as an object, additional options can be set.
-        // For example:
+        // As a string, it just includes the name of the widget:
+        //
+        // ```
+        // widget: 'MoodGauge'
+        // ```
+        //
+        // As an object, additional options can be set:
         //
         // ```
         // widget: {
         //     name: 'MoodGauge',
         //     id: 'myid',
         //     ref: 'myref', // It will be added as node.game[ref]
-        //     options: { ... },
+        //     options: { ... }, // Options passed to `node.widgets.append()`
         //     append: false,
         //     checkAnswers: false,
         //     root: ...
         //     destroyOnExit: false
         // }
         // ```
-        widget: 'MoodGauge'
+        //////
+        widget: {
+            name: 'MoodGauge',
+            options: {
+                panel: false,
+                title: false
+            }
+        }
     });
 
     stager.extendStage('ultimatum', {
         // Disable the donebutton for this step.
-        donebutton: false,
-        /////////////////////////////////////////////////////////////
-        // nodeGame hint: the init function
-        //
-        // It is a function that is executed before the main callback,
-        // and before loading any frame.
-        //
-        // Likewise, it is possible to define an `exit` function that
-        // will be executed upon exiting the step.
-        //
-        // Notice that if the function is defined at the level of the
-        // stage, it will be executed only once upone entering the
-        // stage. If, you need to have it executed every round the
-        // stage is repeated, add it to the first step of the stage.
-        init: function() {
-            node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
-                                             'COUNT_UP_ROUNDS_TO_TOTAL']);
-        },
-        // `syncOnLoaded` forces the clients to wait for all the others to be
-        // fully loaded before releasing the control of the screen to the
-        // players.  This options introduces a little overhead in
-        // communications and delay in the execution of a stage. It is probably
-        // not necessary in local networks, and it is FALSE by default.
-        // syncOnLoaded: true
+        donebutton: false
     });
 
     stager.extendStep('bidder', {
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: roles
+        //
+        // The same step can be played differently by different players,
+        // if roles are assigned. Inside a role object, it is possible
+        // to redefine each step property to fit the purpose of the role.
+        /////////////////////////////////////////////////////////////////
         roles: {
             BIDDER: {
                 /////////////////////////////////////////////////////////////
@@ -252,41 +242,65 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 //
                 // The default timeup is different for player and logic client
                 // types. For players, by default it is a call to `node.done()`.
+                ////////////////////////////////////////////////////////////////
                 timeup: function() { node.game.bidTimeup(); },
                 frame: 'bidder.html',
                 cb: function() {
                     var that, b;
-                    b = W.getElementById('submitOffer');
+                    b = W.gid('submitOffer');
 
                     //////////////////////////////////////////////
-                    // nodeGame hint:
+                    // nodeGame hint: context
                     //
                     // var that = this;
                     //
-                    // /this/ is usually a reference to node.game
+                    // Unlike many other progamming languages, in javascript
+                    // the object /this/ assumes different values depending
+                    // on the scope of the function where it is called.
                     //
-                    // However, unlike in many progamming languages,
-                    // in javascript the object /this/ assumes
-                    // different values depending on the scope
-                    // of the function where it is called.
-                    //
-                    /////////////////////////////////////////////
+                    // Inside the step-callback `this` references `node.game`.
+                    //////////////////////////////////////////////////////////
                     that = this;
                     b.onclick = function() {
                         var offer, value;
-                        offer = W.getElementById('offer');
+                        offer = W.gid('offer');
                         value = that.isValidBid(offer.value);
                         if (value === false) {
-                            W.writeln('Please enter a number between 0 and 100',
-                                      W.getElementById('container'));
+                            W.writeln('Please enter a number between 0 and ' +
+                                      node.game.settings.COINS,
+                                      W.gid('container'));
                             return;
                         }
-                        that.node.emit('BID_DONE', value);
+
+                        //////////////////////////////////////////////
+                        // nodeGame hint: emit
+                        //
+                        // `node.emit` fires an event locally. To send
+                        // an event through the network use `node.say`.
+                        ///////////////////////////////////////////////
+                        node.emit('BID_DONE', value);
                     };
                 }
             },
-            RESPONDENT: {
-                init: function() {                    
+            RESPONDENT: {                
+                /////////////////////////////////////////////////////////////
+                // nodeGame hint: the init function
+                //
+                // It is a function that is executed before the main callback,
+                // and before loading any frame.
+                //
+                // Likewise, it is possible to define an `exit` function that
+                // will be executed upon exiting the step.
+                //
+                // Notice that if the function is defined at the level of the
+                // stage, it will be executed only once upon entering the
+                // stage. If, you need to have it executed every round the
+                // stage is repeated, add it to the first step of the stage.
+                //
+                // There is also an `exit` callback, executed when exiting
+                // the stage or step.
+                ////////////////////////////////////////////////////////////
+                init: function() {
                     node.game.offerReceived = null;
                 },
                 frame: 'resp.html',
@@ -294,10 +308,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     // It was a reconnection.
                     if (this.offerReceived !== null) node.done();
                     node.on.data('OFFER', function(msg) {
-                        node.game.offerReceived = msg.data;     
-                        node.done();       
-                    }); 
-                }
+                        node.game.offerReceived = msg.data;
+                        node.done();
+                    });
+                },
+                timeup: null
             },
             SOLO: {
                 frame: 'solo.html',
@@ -312,15 +327,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: role and partner
         //
-        // By default `role` and a `partner` are valid only within a step.
-        // It is possible to carry over the values 
+        // By default `role` and a `partner` are valid only within a step,
+        // but it is possible to carry over the values between steps.
         //
         // Role and partner meaning:
         //   - falsy      -> delete (default),
         //   - true       -> keep current value,
         //   - string     -> as is (must exist),
         //   - function   -> must return null or a valid role name
-        //////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
         role: function() { return this.role; },
         partner: function() { return this.partner; },
         roles: {
@@ -329,18 +344,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     node.game.resTimeup();
                 },
                 cb: function() {
-                    var accept, reject, node;
+                    var accept, reject;
                     W.setInnerHTML('theoffer', this.offerReceived);
                     W.show('offered');
 
-                    node = this.node;
-                    accept = W.getElementById('accept');
+                    accept = W.gid('accept');
 
                     accept.onclick = function() {
                         node.emit('RESPONSE_DONE', 'ACCEPT');
                     };
 
-                    reject = W.getElementById('reject');
+                    reject = W.gid('reject');
                     reject.onclick = function() {
                         node.emit('RESPONSE_DONE', 'REJECT');
                     };
@@ -348,9 +362,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             },
             BIDDER: {
                 cb: function() {
-                    var node, root;
-                    node = this.node;
-                    root = W.getElementById('container');
+                    var root;
+                    root = W.gid('container');
+
                     //////////////////////////////////////////////
                     // nodeGame hint:
                     //
@@ -367,7 +381,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     //
                     // For example, node.on('in.say.DATA', cb) can
                     // listen to all incoming DATA messages.
-                    //
                     /////////////////////////////////////////////
                     node.on.data('ACCEPT', function(msg) {
                         node.game.visualTimer.stop();
@@ -379,7 +392,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         W.write(' Your offer was rejected.', root);
                         node.timer.randomDone(3000);
                     });
-                }
+                },
+                timeup: null
             },
             SOLO: {
                 cb: function() {
@@ -390,25 +404,44 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
-        frame: 'ended.html',
-        cb: cbs.endgame,
-        /////////////////////////////////////////////////////////////
+        frame: 'generic.htm',
+        // Another widget-step (see the mood step above).
+        widget: {
+            name: 'EndScreen',
+            root: 'container',
+            options: {
+                panel: false,
+                title: false,
+                showEmailForm: true,
+                showFeedbackForm: true,
+                email: {
+                    texts: {
+                        label: 'Enter your email (optional):',
+                        errString: 'Please enter a valid email and retry'
+                    }
+                },
+                feedback: { minLength: 50 }
+            }
+        },
+        //////////////////////////////////////////
         // nodeGame hint: the donebutton parameter
         //
-        // It is read by the DoneButton widget, and it can set the
+        // The DoneButton widget reads this: it can set
         // the text on the button, or disable it (false).
-        donebutton: false
+        /////////////////
+        donebutton: false,
+        // Callback using for testing purposes, ignore it
+        cb: function() {
+            console.log('PHANTOMJS EXITING');
+        }
     });
 
     stager.extendStep('questionnaire', {
-        init: function() {
-            node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
-        },
         cb: function() {
             var qt;
             qt = this.questTexts;
             this.quest = node.widgets.append('ChoiceTable',
-                                             W.getElementById('quiz'),
+                                             W.gid('quiz'),
                                              {
                                                  id: 'quest',
                                                  mainText: qt.mainText,
@@ -419,7 +452,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                                                  orientation: 'v'
                                              });
         },
-        frame: 'questionnaire.html', // ('postgame.html' to have forms in html)
+        frame: 'questionnaire.html',
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the done callback
         //
@@ -427,6 +460,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // If it returns FALSE, the call to `node.done` is canceled.
         // Other return values are sent to the server, and replace any
         // parameter previously passed to `node.done`.
+        //////////////////////////////////////////////
         done: function(args) {
             var answers, isTimeup;
             answers = this.quest.getValues();
@@ -439,19 +473,4 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    // We serialize the game sequence before sending it.
-    game.plot = stager.getState();
-
-    // Other settings, optional.
-
-    game.env = {
-        auto: settings.AUTO,
-        treatment: treatmentName
-    };
-    game.verbosity = 1000;
-
-    game.debug = settings.DEBUG;
-    game.nodename = 'player';
-
-    return game;
 };

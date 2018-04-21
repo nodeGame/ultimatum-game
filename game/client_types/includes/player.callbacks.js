@@ -1,16 +1,13 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * Copyright(c) 2018 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
  */
 
 module.exports = {
-    init: init,
-    precache: precache,
-    selectLanguage: selectLanguage,
-    endgame: endgame
+    init: init
 };
 
 function init() {
@@ -26,9 +23,9 @@ function init() {
         // Uncomment to visualize the name of the stages.
         //node.game.visualStage = node.widgets.append('VisualStage', header);
 
-        node.game.rounds = node.widgets.append('VisualRound', header, {
-            displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
-            stageOffset: 1
+        node.game.visualRound = node.widgets.append('VisualRound', header, {
+            stageOffset: 1,
+            title: false
         });
 
         node.game.visualTimer = node.widgets.append('VisualTimer', header);
@@ -108,8 +105,6 @@ function init() {
     });
 
     // Add other functions are variables used during the game.
-
-    this.partner = null;
 
     this.bidTimeup = function() {
         node.emit('BID_DONE', Math.floor(Math.random() * 101), true);
@@ -192,75 +187,6 @@ function init() {
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
 
-    // Listeners for first two stages are put here, so that
-    // if there is a reconnection they can be executed by any
-    // step.
-
-    node.game.partner = null;
     node.game.offerReceived = null;          
 }
 
-//////////////////////////////////////////////
-// nodeGame hint:
-//
-// Pages can be preloaded with this method:
-//
-// W.preCache()
-//
-// It loads the content from the URIs given in an array parameter, and the
-// next time W.loadFrame() is used with those pages, they can be loaded
-// from memory.
-//
-// W.preCache calls the function given as the second parameter when it's
-// done.
-//
-/////////////////////////////////////////////
-function precache() {
-    W.lockScreen('Loading...');
-    console.log('pre-caching...');
-    W.preCache([
-        'languageSelection.html', // no text here.
-
-        // Instructions are not pre-cached, because in case they are loaded
-        // from public/ a js file must modify the content of the DOM.
-        // node.game.settings.instructionsPage,
-
-        'quiz2.html', // ('quiz.html' to have version with forms).
-
-        // Not cached (for demonstration).
-        // 'bidder.html',
-        // 'resp.html',
-
-        'questionnaire.html', // ('postgame.html' to have version with forms)
-        'ended.html'
-    ], function() {
-        console.log('Precache done.');
-        // Pre-Caching done; proceed to the next stage.
-        node.done();
-    });
-}
-
-function selectLanguage() {
-    node.game.lang = node.widgets.append('LanguageSelector',
-                                         W.getFrameDocument().body);
-}
-
-function endgame() {
-    this.visualTimer.switchActiveBoxTo(this.visualTimer.mainBox);
-    this.visualTimer.waitBox.hideBox();
-    this.visualTimer.setToZero();
-    node.on.data('WIN', function(msg) {
-        var win, exitcode, codeErr;
-        var root;
-        root = W.getElementById('container');
-        codeErr = 'ERROR (code not found)';
-        win = msg.data && msg.data.win || 0;
-        exitcode = msg.data && msg.data.exitcode || codeErr;
-        W.writeln('', root);
-        W.writeln('', root);
-        W.writeln('Your bonus in this game is: ' + win, root);
-        W.writeln('Your exitcode is: ' + exitcode, root);
-    });
-
-    console.log('Game ended');
-}

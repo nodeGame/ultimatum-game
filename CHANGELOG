@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0
+- EndScreen
+- Updated to work with nodeGame v4.
+
 ## 3.5.5
 - Fixed bug shuffleChoices.
 

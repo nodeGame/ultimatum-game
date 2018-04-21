@@ -1,6 +1,6 @@
 /**
  * # Bot code for Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * Code for a bot playing the ultimatum game randomly.
@@ -19,24 +19,85 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var game;
 
     var channel = gameRoom.channel;
-    var node = gameRoom.node;
-
-
-    // Import other functions used in the game.
-    ///////////////////////////////////////////
-
-    cbs = require(__dirname + '/includes/bot.callbacks.js');
+    var logic = gameRoom.node;
 
     // Specify init function, and extend default stages.
     ////////////////////////////////////////////////////
 
-    stager.setOnInit(cbs.init);
-
     // Set the default step rule for all the stages.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    stager.extendStep('ultimatum', {
-        cb: cbs.ultimatum
+    stager.setDefaultCallback(function() {
+        this.node.timer.randomDone(2000);   
+    });
+
+    stager.extendStep('bidder', {
+        role: function() { return this.role; },
+        roles: {
+            BIDDER: {
+                cb: function() {
+                    var node, amount;
+                    node = this.node;
+                    amount = Math.floor(Math.random() * 101);
+                    setTimeout(function() {
+                        node.say('OFFER', node.game.partner, amount);
+                        node.done({ offer: amount});
+                    }, 2000);
+                }
+            },
+            RESPONDENT: {
+                cb: function() {
+                    var node;
+                    node = this.node;
+
+                    node.on.data('OFFER', function(msg) {
+                        node.done();
+                    });
+                }
+            }
+        }
+    });
+
+    stager.extendStep('respondent', {
+        role: function() { return this.role; },
+        partner: function() { return this.partner; },
+        roles: {
+            RESPONDENT: {
+                cb: function() {
+                    var node, response;
+                    
+                    that = this;
+                    node = this.node;
+                    if (Math.round(Math.random())) {
+                        response = 'ACCEPT';
+                    }
+                    else {
+                        response = 'REJECT';
+                    }
+                    node.say(response, node.game.partner, response);
+                    node.done({
+                        value: node.game.offerReceived,
+                        responseTo: node.game.partner,
+                        response: response
+                    });
+                }
+            },
+            BIDDER: {
+                cb: function() {
+                    var node;
+                    node = this.node;
+                    
+                    node.on.data('ACCEPT', function(msg) {
+                        node.info(' Your offer was accepted.');
+                        node.done();
+                    });
+                    node.on.data('REJECT', function(msg) {
+                        node.info(' Your offer was rejected.');
+                        node.done();
+                    });
+                }
+            }
+        }
     });
 
     // Prepare the game object to return.
@@ -46,26 +107,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // We serialize the game sequence before sending it.
     game.plot = stager.getState();
-
-    // Let's add the metadata information.
-    game.metadata = {
-        name: 'ultimatum_bot',
-        version: '0.4.0',
-        description: 'Bot randomly playing the ultimatum game'
-    };
-
-    // Other settings, optional.
-    game.settings = {
-        publishLevel: 2
-    };
-
-    game.env = {
-        auto: settings.AUTO,
-        treatment: treatmentName
-    };
-
-    game.verbosity = 0;
-    game.debug = settings.DEBUG;
     game.nodename = 'bot';
 
     return game;

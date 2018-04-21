@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ultimatum automatic test run
-# Copyright(c) 2015 Stefano Balietti
+# Copyright(c) 2018 Stefano Balietti
 # MIT Licensed
 #
 # Run this from inside the ultimatum directory inside nodegame/games/:
@@ -14,7 +14,7 @@ set -e
 
 # Go to the nodegame directory and run the automatic game.
 cd ../..
-node test/launcher-autoplay.js ultimatum
+node test/launcher-autoplay.js ultimatum ultimatum-game
 cd games/ultimatum-game
 
 npm test

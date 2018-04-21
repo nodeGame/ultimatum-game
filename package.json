@@ -1,8 +1,14 @@
 {
   "name": "ultimatum-game",
   "channelName": "ultimatum",
-  "description": "Plays an ultimatum game with nodegame",
-  "version": "3.5.6",
+  "description": "Plays an ultimatum game with nodegame.",
+  "card": {
+    "description": "Ultimatum game: take it or leave it",
+    "url": "https://github.com/nodeGame/ultimatum-game",
+    "wiki": "https://en.wikipedia.org/wiki/Ultimatum_game",
+    "icon": "group_work"
+  },
+  "version": "4.0.0",
   "author": {
     "name": "Stefano Balietti",
     "email": "ste@nodegame.org",
@@ -26,7 +32,7 @@
   },
   "engines": {
     "node": "*",
-    "nodegame": ">= 3.5.0"
+    "nodegame": ">= 4.0.0"
   },
   "homepage": "http://nodegame.org",
   "scripts": {
