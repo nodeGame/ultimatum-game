@@ -9,7 +9,7 @@
  * ---
  */
 module.exports = {
-    
+
     /**
      * ## EXECUTION_MODE
      *
@@ -23,7 +23,7 @@ module.exports = {
      *   - ´TIMEOUT´, waits until the time is up, then it checks
      *        whether enough players are connected to start the game.
      *   - ´WAIT_FOR_N_PLAYERS´, the game starts right away as soon as
-     *        the desired number of connected players is reached.     
+     *        the desired number of connected players is reached.
      */
     // EXECUTION_MODE: 'TIMEOUT',
     EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS',
@@ -32,7 +32,7 @@ module.exports = {
      * ## POOL_SIZE
      *
      * How many clients must connect before groups are formed
-     */ 
+     */
     POOL_SIZE: 2,
 
     /**
@@ -45,7 +45,7 @@ module.exports = {
     /**
      * ## N_GAMES
      *
-     * Number of games to dispatch 
+     * Number of games to dispatch
      *
      * If set, it will close the waiting room after N_GAMES
      * have been dispatched
@@ -56,7 +56,7 @@ module.exports = {
      * ## MAX_WAIT_TIME
      *
      * Maximum waiting time in the waiting room
-     */ 
+     */
     MAX_WAIT_TIME: 60000,
 
     /**
@@ -67,7 +67,7 @@ module.exports = {
      * Overrides `MAX_WAIT_TIME`. Accepted values: any valid
      * argument to `Date` constructor.
      */
-    // START_DATE: 'December 13, 2015 13:24:00', 
+    // START_DATE: 'December 13, 2015 13:24:00',
     // START_DATE: new Date().getTime() + 30000,
 
     /**
@@ -96,7 +96,7 @@ module.exports = {
      * Disconnect clients if not selected for a game when dispatching
      */
     DISCONNECT_IF_NOT_SELECTED: false,
-    
+
     /**
      * ## PLAYER_SORTING
      *
@@ -329,7 +329,7 @@ module.exports = {
      * @see WaitingRoom.texts
      */
     TEXTS: {
-         
+
         /**
          * #### blinkTitle
          *
@@ -343,14 +343,14 @@ module.exports = {
          * Disconnected from waiting room
          */
         // disconnect: 'Custom string: YOU HAVE BEEN DISCONNECTED!',
-        
+
         /**
          * #### waitedTooLong
          *
          * The MAX_WAIT_TIME countdown expired
          */
         // waitedTooLong: 'Custom string: YOU WAITED TOO LONG!',
-        
+
         /**
          * #### notEnoughPlayers
          *
@@ -369,7 +369,7 @@ module.exports = {
          * #### notEnoughPlayers
          *
          * Currently there are more players than needed by the game
-         */ 
+         */
         // tooManyPlayer: 'Custom string: TOO MANY PLAYERS!',
 
         /**
@@ -378,7 +378,7 @@ module.exports = {
          * Player has not been selected, and cannot participate in other games
          */
         // notSelectedClosed: 'Custom string: NOT SELECTED CLOSED!',
-        
+
         /**
          * #### notSelectedOpen
          *
@@ -386,7 +386,7 @@ module.exports = {
          */
         // notSelectedOpen: 'Custom string: NOT SELECTED OPEN!',
 
-        
+
         /**
          * #### notSelectedOpen
          *
@@ -394,7 +394,7 @@ module.exports = {
          */
         // exitCode: 'Custom string: EXIT CODE TEXT',
     },
-    
+
     /** ### SOUNDS
      *
      * Collections of sounds played when given events occurs
@@ -406,7 +406,7 @@ module.exports = {
      * @see WaitingRoom.sounds
      */
     SOUNDS: {
-        
+
         /**
          * ## dispatch
          *
@@ -418,6 +418,24 @@ module.exports = {
          */
         // dispatch: false
     },
-    
-    ALLOW_PLAY_WITH_BOTS: true
+
+    /** ### ALLOW_PLAY_WITH_BOTS
+     *
+     * Allows a player to request to start the game immediately with bots
+     *
+     * A button is added to the interface.
+     */
+    ALLOW_PLAY_WITH_BOTS: true,
+
+    /** ### ALLOW_SELECT_TREATMENT
+     *
+     * Allows a player to select the treatment for the game
+     *
+     * This option requires `ALLOW_PLAY_WITH_BOTS` to be TRUE.
+     *
+     * A button is added to the interface.
+     *
+     * @experimental
+     */
+    ALLOW_SELECT_TREATMENT: true
 };

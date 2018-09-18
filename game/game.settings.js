@@ -1,6 +1,6 @@
 /**
  * # Game settings: Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2018 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -25,11 +25,11 @@ module.exports = {
     // TIMER.
     // If the name of a key of the TIMER object matches the name of one
     // of the steps or stages, its value is automatically used as the
-    // value of the `timer` property of that step/stage. 
+    // value of the `timer` property of that step/stage.
     //
     // The timer property is read by `node.game.timer` and by VisualTimer
     // widgets, if created. It can be:
-    // 
+    //
     //  - a number (in milliseconds),
     //  - a function returning the number of milliseconds,
     //  - an object containing properties _milliseconds_, and _timeup_
@@ -49,9 +49,8 @@ module.exports = {
     // Available treatments:
     // (there is also the "standard" treatment, using the options above)
     treatments: {
-        
+
         standard: {
-            fullName: "Standard",
             description:
                 "More time to wait and no peer pressure.",
             WAIT_TIME: 20,
@@ -59,7 +58,6 @@ module.exports = {
         },
 
         pp: {
-            fullName: "Peer Pressure",
             description:
                 "Introduces peer pressure to players to not disconnect.",
             WAIT_TIME: 10,
@@ -67,7 +65,7 @@ module.exports = {
         }
     }
 
-    
-    // * =  If you change this, you need to update 
+
+    // * =  If you change this, you need to update
     // the instructions and quiz static files in public/
 };
