@@ -20,9 +20,9 @@ module.exports = {
      *
      * Available modes:
      *
-     *   - ´TIMEOUT´, waits until the time is up, then it checks
+     *   - `TIMEOUT`, waits until the time is up, then it checks
      *        whether enough players are connected to start the game.
-     *   - ´WAIT_FOR_N_PLAYERS´, the game starts right away as soon as
+     *   - `WAIT_FOR_N_PLAYERS`, the game starts right away as soon as
      *        the desired number of connected players is reached.
      */
     // EXECUTION_MODE: 'TIMEOUT',
@@ -47,8 +47,7 @@ module.exports = {
      *
      * Number of games to dispatch
      *
-     * If set, it will close the waiting room after N_GAMES
-     * have been dispatched
+     * If set, wait room will close after N_GAME have been dispatched.
      */
     // N_GAMES: 1,
 
@@ -437,5 +436,5 @@ module.exports = {
      *
      * @experimental
      */
-    ALLOW_SELECT_TREATMENT: true
+    // ALLOW_SELECT_TREATMENT: true
 };

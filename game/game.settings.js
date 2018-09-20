@@ -51,8 +51,7 @@ module.exports = {
     treatments: {
 
         standard: {
-            description:
-                "More time to wait and no peer pressure.",
+            description: "More time to wait and no peer pressure.",
             WAIT_TIME: 20,
             instructionsPage: 'instructions.html'
         },
