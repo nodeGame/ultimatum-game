@@ -436,5 +436,5 @@ module.exports = {
      *
      * @experimental
      */
-    // ALLOW_SELECT_TREATMENT: true
+    ALLOW_SELECT_TREATMENT: true
 };
