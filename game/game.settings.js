@@ -1,6 +1,6 @@
 /**
  * # Game settings: Ultimatum Game
- * Copyright(c) 2018 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2019 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -37,7 +37,7 @@ module.exports = {
     //      to execute when the timer expires. If _timeup_ is not set,
     //      property _timeup_ of the game step will be used.
     TIMER: {
-        selectLanguage: 3000000,
+        selectLanguage: 300000000,
         instructions: 90000,
         quiz: 60000,
         mood: 60000,
