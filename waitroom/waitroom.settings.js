@@ -1,6 +1,6 @@
 /**
  * # Waiting Room settings
- * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2019 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Waiting room settings
@@ -24,9 +24,12 @@ module.exports = {
      *        whether enough players are connected to start the game.
      *   - `WAIT_FOR_N_PLAYERS`, the game starts right away as soon as
      *        the desired number of connected players is reached.
+     *   - `WAIT_FOR_DISPATCH`, the game starts when it receives a
+     *        command to dispatch from the monitor.
      */
     // EXECUTION_MODE: 'TIMEOUT',
     EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS',
+    // EXECUTION_MODE: 'WAIT_FOR_DISPATCH',
 
     /**
      * ## POOL_SIZE
@@ -56,7 +59,7 @@ module.exports = {
      *
      * Maximum waiting time in the waiting room
      */
-    MAX_WAIT_TIME: 60000,
+    // MAX_WAIT_TIME: 60000,
 
     /**
      * ## START_DATE
@@ -67,7 +70,7 @@ module.exports = {
      * argument to `Date` constructor.
      */
     // START_DATE: 'December 13, 2015 13:24:00',
-    // START_DATE: new Date().getTime() + 30000,
+    // START_DATE: new Date().getTime() + 300000,
 
     /**
      * ## CHOSEN_TREATMENT
