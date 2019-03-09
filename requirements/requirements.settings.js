@@ -1,6 +1,6 @@
 /**
  * # Requirements settings
- * Copyright(c) 2017 Stefano Balietti
+ * Copyright(c) 2019 Stefano Balietti
  * MIT Licensed
  *
  * Requirements settings file.
@@ -32,10 +32,10 @@ module.exports = {
      *
      * If set, client must exchange messages with server "quickly enough"
      */
-    speedTest: {
-         messages: 10,
-         time: 1000
-    },
+    // speedTest: {
+    //     messages: 1,
+    //     time: 2000
+    // },
 
     /**
      * ## cookieSupport
@@ -54,14 +54,14 @@ module.exports = {
      *
      * If set, client must have a resolution between the min and max specified
      */
-    viewportSize: {
-         minX: 800,
-         minY: 600,
-         // maxX: 13660,
-         // maxY: 7680
-    },
+    // viewportSize: {
+    //     minX: 800,
+    //     minY: 600,
+    //     // maxX: 13660,
+    //     // maxY: 7680
+    // },
 
-   /**
+    /**
      * ## browserDetect
      *
      * Checks the browser and device
@@ -76,22 +76,22 @@ module.exports = {
      *
      * @see https://github.com/faisalman/ua-parser-js
      */
-    browserDetect: {
-      cb: function(ua, params) {
-          if (ua.device.model || ua.device.type) {
-              return {
-                  success: false,
-                  errors: [ 'It seems you are using a mobile or tablet ' +
-                            'device. You can participate to this game ' +
-                            'only from a desktop or laptop computer ' +
-                            'with a keyboard and a mouse. If you ' +
-                            'can, try with another browser or device.' ]
-              };
-          }
-
-          return { success: true };
-      }
-  },
+    // browserDetect: {
+    //     cb: function(ua, params) {
+    //         if (ua.device.model || ua.device.type) {
+    //             return {
+    //                 success: false,
+    //                 errors: [ 'It seems you are using a mobile or tablet ' +
+    //                           'device. You can participate to this game ' +
+    //                           'only from a desktop or laptop computer ' +
+    //                           'with a keyboard and a mouse. If you ' +
+    //                           'can, try with another browser or device.' ]
+    //             };
+    //         }
+    //
+    //         return { success: true };
+    //     }
+    // },
 
     /**
      * ## nextRoom
