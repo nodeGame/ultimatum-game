@@ -60,7 +60,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('precache', {        
+    stager.extendStep('precache', {
         //////////////////////////////////////////////
         // nodeGame hint:
         //
@@ -282,7 +282,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     };
                 }
             },
-            RESPONDENT: {                
+            RESPONDENT: {
                 /////////////////////////////////////////////////////////////
                 // nodeGame hint: the init function
                 //

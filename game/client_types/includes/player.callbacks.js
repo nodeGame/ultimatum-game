@@ -35,16 +35,15 @@ function init() {
 
         // Additional debug information while developing the game.
         // node.game.debugInfo = node.widgets.append('DebugInfo', header)
-
     }
 
     // Add the main frame where the pages will be loaded.
-    if (!W.getFrame()) W.generateFrame();    
+    if (!W.getFrame()) W.generateFrame();
 
     // Add event listeners valid for the whole game.
 
     node.on('BID_DONE', function(value, notify) {
-        var root, time, offer, submitOffer, timeup;        
+        var root, time, offer, submitOffer, timeup;
 
         timeup = node.game.timer.isTimeup();
 
@@ -187,6 +186,5 @@ function init() {
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
 
-    node.game.offerReceived = null;          
+    node.game.offerReceived = null;
 }
-
