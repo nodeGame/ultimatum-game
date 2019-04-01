@@ -44,13 +44,13 @@ function init() {
 
         // Update last stage reference.
         node.game.lastStage = currentStage;
-        
+
         for (p in node.game.lastBids) {
             if (node.game.lastBids.hasOwnProperty(p)) {
 
                 // Respondent payoff.
                 client = channel.registry.getClient(p);
-                
+
                 gain = node.game.lastBids[p];
                 if (gain) {
                     client.win = !client.win ? gain : client.win + gain;
@@ -63,8 +63,8 @@ function init() {
 
         if (db && db.size()) {
             prefix = gameRoom.dataDir + 'memory_' + currentStage;
-            db.save(prefix + '.csv', { flags: 'w' }); 
-            db.save(prefix + '.nddb', { flags: 'w' }); 
+            db.save(prefix + '.csv', { flags: 'w' });
+            db.save(prefix + '.nddb', { flags: 'w' });
 
             console.log('Round data saved ', currentStage);
         }
@@ -119,7 +119,7 @@ function endgame() {
         //         info.partials = [ 10, -1, 7];
         // }
     });
-    
+
     // Dump all memory.
     node.game.memory.save('memory_all.json');
 }
@@ -177,10 +177,10 @@ function reconnectUltimatum(p, reconOptions) {
             if (this.node.player.stage.step === 3) {
                 this.lastOffer = options.offer;
                 this.node.on('LOADED', function() {
-                    this.node.emit('BID_DONE', this.lastOffer, false);
+                    node.done(options.lastOffer);
                 });
             }
-        };        
+        };
     }
 
     else if (role === 'SOLO') {

@@ -1,6 +1,6 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2018 Stefano Balietti
+ * Copyright(c) 2019 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -42,36 +42,6 @@ function init() {
 
     // Add event listeners valid for the whole game.
 
-    node.on('BID_DONE', function(value, notify) {
-        var root, time, offer, submitOffer, timeup;
-
-        timeup = node.game.timer.isTimeup();
-
-        // Save references.
-        node.game.lastOffer = value;
-        node.game.lastTimup = timeup;
-        node.game.lastTime = time;
-
-        offer = W.getElementById('offer');
-        if (offer) offer.disabled = 'disabled';
-        submitOffer = W.getElementById('submitOffer');
-        if (submitOffer) submitOffer.disabled = 'disabled';
-
-        root = W.getElementById('container');
-        // Leave a space.
-        W.writeln(' Your offer: ' +  value +
-                  '. Waiting for the respondent... ', root);
-
-        if (notify !== false) {
-            // Notify the other player.
-            node.say('OFFER', node.game.partner, node.game.lastOffer);
-
-            // Notify the server.
-            node.done({ offer: value });
-        }
-
-    });
-
     node.on('RESPONSE_DONE', function(response) {
 
         // Tell the other player own response.
@@ -105,10 +75,6 @@ function init() {
 
     // Add other functions are variables used during the game.
 
-    this.bidTimeup = function() {
-        node.emit('BID_DONE', Math.floor(Math.random() * 101), true);
-    };
-
     this.resTimeup = function() {
         var root, accepted;
         accepted = Math.round(Math.random());
@@ -122,10 +88,6 @@ function init() {
             node.emit('RESPONSE_DONE', 'REJECT');
             W.write(' You rejected the offer.', root);
         }
-    };
-
-    this.isValidBid = function(n) {
-        return node.JSUS.isInt(n, -1, 101);
     };
 
     // Quiz widget (to be created later).

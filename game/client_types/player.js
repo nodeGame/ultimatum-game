@@ -217,11 +217,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStage('ultimatum', {
-        // Disable the donebutton for this step.
-        donebutton: false
-    });
-
     stager.extendStep('bidder', {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: roles
@@ -232,6 +227,21 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         /////////////////////////////////////////////////////////////////
         roles: {
             BIDDER: {
+                frame: 'bidder.html',
+                widget: {
+                    name: 'CustomInput',
+                    ref: 'bid',
+                    options: {
+                        type: 'int',
+                        min: 0,
+                        max: settings.COINS,
+                        requiredChoice: true,
+                        className: 'centered',
+                        root: 'container',
+                        mainText: 'Make an offer between 0 and ' +
+                            settings.COINS + ' to another player'
+                    }
+                },
                 /////////////////////////////////////////////////////////////
                 // nodeGame hint: the timeup parameter
                 //
@@ -243,43 +253,37 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // The default timeup is different for player and logic client
                 // types. For players, by default it is a call to `node.done()`.
                 ////////////////////////////////////////////////////////////////
-                timeup: function() { node.game.bidTimeup(); },
-                frame: 'bidder.html',
-                cb: function() {
-                    var that, b;
-                    b = W.gid('submitOffer');
+                timeup: function() {
+                    var rndBid =
+                        Math.floor(Math.random() *
+                                   (node.game.settings.COINS + 1));
+                    node.game.bid.setValues(rndBid);
+                    node.done();
+                },
+                done: function(offer) {
+                    var root, timeup;
+                    timeup = this.timer.isTimeup();
 
-                    //////////////////////////////////////////////
-                    // nodeGame hint: context
-                    //
-                    // var that = this;
-                    //
-                    // Unlike many other progamming languages, in javascript
-                    // the object /this/ assumes different values depending
-                    // on the scope of the function where it is called.
-                    //
-                    // Inside the step-callback `this` references `node.game`.
-                    //////////////////////////////////////////////////////////
-                    that = this;
-                    b.onclick = function() {
-                        var offer, value;
-                        offer = W.gid('offer');
-                        value = that.isValidBid(offer.value);
-                        if (value === false) {
-                            W.writeln('Please enter a number between 0 and ' +
-                                      node.game.settings.COINS,
-                                      W.gid('container'));
-                            return;
-                        }
+                    // Variable offer is defined only in case of a reconnection.
+                    if ('undefined' !== typeof offer) {
+                        offer = node.game.bid.getValues().value;
+                        // Save references.
+                        node.game.lastOffer = offer;
+                    }
 
-                        //////////////////////////////////////////////
-                        // nodeGame hint: emit
-                        //
-                        // `node.emit` fires an event locally. To send
-                        // an event through the network use `node.say`.
-                        ///////////////////////////////////////////////
-                        node.emit('BID_DONE', value);
-                    };
+                    // Write to text.
+                    root = W.gid('container');
+                    W.writeln(' Your offer: ' +  offer +
+                              '. Waiting for the respondent... ', root);
+
+
+                    if ('undefined' !== typeof offer) {
+                        // Notify the other player.
+                        node.say('OFFER', node.game.partner, offer);
+
+                        // Notify the server.
+                        return { offer: offer };
+                    }
                 }
             },
             RESPONDENT: {
@@ -303,12 +307,31 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 init: function() {
                     node.game.offerReceived = null;
                 },
+                donebutton: false,
                 frame: 'resp.html',
                 cb: function() {
+                    var that;
                     // It was a reconnection.
                     if (this.offerReceived !== null) node.done();
+
+                    //////////////////////////////////////////////
+                    // nodeGame hint: context
+                    //
+                    // var that = this;
+                    //
+                    // Unlike many other programming languages, in javascript
+                    // the object /this/ assumes different values depending
+                    // on the scope of the function where it is called.
+                    //
+                    // Inside the step-callback `this` references `node.game`.
+                    //
+                    // We bind the value of `this` to another variable (`that`),
+                    // so that we can still access it inside the callback
+                    // function of the method `node.on.data`.
+                    ////////////////////////////////////////////////////////////
+                    that = this;
                     node.on.data('OFFER', function(msg) {
-                        node.game.offerReceived = msg.data;
+                        that.offerReceived = msg.data;
                         node.done();
                     });
                 },
@@ -338,24 +361,27 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //////////////////////////////////////////////////////////
         role: function() { return this.role; },
         partner: function() { return this.partner; },
+        donebutton: false,
         roles: {
             RESPONDENT: {
                 timeup: function() {
                     node.game.resTimeup();
                 },
                 cb: function() {
-                    var accept, reject;
                     W.setInnerHTML('theoffer', this.offerReceived);
                     W.show('offered');
 
-                    accept = W.gid('accept');
-
-                    accept.onclick = function() {
+                    W.gid('accept').onclick = function() {
+                        //////////////////////////////////////////////
+                        // nodeGame hint: emit
+                        //
+                        // `node.emit` fires an event locally. To send
+                        // an event through the network use `node.say`.
+                        ///////////////////////////////////////////////
                         node.emit('RESPONSE_DONE', 'ACCEPT');
                     };
 
-                    reject = W.gid('reject');
-                    reject.onclick = function() {
+                    W.gid('reject').onclick = function() {
                         node.emit('RESPONSE_DONE', 'REJECT');
                     };
                 }

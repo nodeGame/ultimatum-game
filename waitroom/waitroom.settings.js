@@ -395,6 +395,9 @@ module.exports = {
          * Player disconnected, and an exit code might have been provided
          */
         // exitCode: 'Custom string: EXIT CODE TEXT',
+
+
+        playBot: 'Play'
     },
 
     /** ### SOUNDS
