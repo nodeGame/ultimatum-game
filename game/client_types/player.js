@@ -403,39 +403,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('endgame', {
-        frame: 'generic.htm',
-        // Another widget-step (see the mood step above).
-        widget: {
-            name: 'EndScreen',
-            root: 'container',
-            options: {
-                panel: false,
-                title: false,
-                showEmailForm: true,
-                showFeedbackForm: true,
-                email: {
-                    texts: {
-                        label: 'Enter your email (optional):',
-                        errString: 'Please enter a valid email and retry'
-                    }
-                },
-                feedback: { minLength: 50 }
-            }
-        },
-        //////////////////////////////////////////
-        // nodeGame hint: the donebutton parameter
-        //
-        // The DoneButton widget reads this: it can set
-        // the text on the button, or disable it (false).
-        /////////////////
-        donebutton: false,
-        // Callback using for testing purposes, ignore it
-        cb: function() {
-            console.log('PHANTOMJS EXITING');
-        }
-    });
-
     stager.extendStep('questionnaire', {
         cb: function() {
             var qt;
@@ -473,4 +440,36 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
+    stager.extendStep('endgame', {
+        frame: 'generic.htm',
+        // Another widget-step (see the mood step above).
+        widget: {
+            name: 'EndScreen',
+            root: 'container',
+            options: {
+                panel: false,
+                title: false,
+                showEmailForm: true,
+                showFeedbackForm: true,
+                email: {
+                    texts: {
+                        label: 'Enter your email (optional):',
+                        errString: 'Please enter a valid email and retry'
+                    }
+                },
+                feedback: { minLength: 50 }
+            }
+        },
+        //////////////////////////////////////////
+        // nodeGame hint: the donebutton parameter
+        //
+        // The DoneButton widget reads this: it can set
+        // the text on the button, or disable it (false).
+        /////////////////
+        donebutton: false,
+        // Callback using for testing purposes, ignore it
+        cb: function() {
+            console.log('PHANTOMJS EXITING');
+        }
+    });
 };
