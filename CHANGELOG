@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.0
+- Removed logic include file.
+- Saving feedback and email to file.
+
 ## 5.1.0
 - Using CustomInput widget for BIDDER.
 
