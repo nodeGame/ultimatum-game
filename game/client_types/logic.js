@@ -9,6 +9,7 @@
  */
 const ngc = require('nodegame-client');
 const J = ngc.JSUS;
+const fs = require('fs');
 const path = require('path');
 
 //////////////////////////////////////
@@ -213,7 +214,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             // Save email to file system.
             node.on.data('email', function(msg) {
-                appendToFile('emai', msg.data, msg.from);
+                appendToFile('email', msg.data, msg.from);
             });
 
             node.on.data('feedback', function(msg) {
@@ -224,7 +225,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 say: true,   // default false
                 dump: true,  // default false
                 print: true,  // default false
-                addDisconnected: false // default false
+                addDisconnected: true // default false
 
                 // Optional. Pre-process the results of each player.
                 // cb: function(info, player) {
@@ -285,7 +286,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
      * @param {string} text The data to save
      * @param {string} clientId The client id
      */
-    function appendToFile(type, text, clientId) {
+    function appendToFile(filename, text, clientId) {
         var row;
         row  = '"' + clientId + '", "' + text + '"\n';
 
