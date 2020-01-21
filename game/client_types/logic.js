@@ -225,7 +225,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 say: true,   // default false
                 dump: true,  // default false
                 print: true,  // default false
-                addDisconnected: true // default false
+                addDisconnected: true, // default false
+                amt: true, // default false (auto-detect)
 
                 // Optional. Pre-process the results of each player.
                 // cb: function(info, player) {
