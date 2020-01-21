@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.2.1
+- amt option in computeBonus.
+
 ## 5.2.0
 - Removed logic include file.
 - Saving feedback and email to file.
