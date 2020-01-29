@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.3.0
+- Refactored autoplay.
+
 ## 5.2.1
 - amt option in computeBonus.
 
