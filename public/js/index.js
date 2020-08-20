@@ -1,6 +1,6 @@
 /**
  * # Index script for nodeGame
- * Copyright(c) 2017 Stefano Balietti
+ * Copyright(c) 2020 Stefano Balietti
  * MIT Licensed
  *
  * http://nodegame.org
@@ -28,6 +28,7 @@ window.onload = function() {
         }
     });
     // Connect to channel.
-    // (If using an alias, must specify the right channel here).
+    // Note! If using an alias or running as default, must specify channel:
+    // node.connect("/ultimatum");
     node.connect();
 };
