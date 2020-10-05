@@ -1,25 +1,26 @@
 /**
  * # Bot code for Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti
+ * Copyright(c) 2020 Stefano Balietti
  * MIT Licensed
  *
  * Code for a bot playing the ultimatum game randomly.
- * 
+ *
  * http://www.nodegame.org
  */
 
-var ngc = require('nodegame-client');
-var Stager = ngc.Stager;
-var stepRules = ngc.stepRules;
-var constants = ngc.constants;
+const ngc = require('nodegame-client');
+const Stager = ngc.Stager;
+const stepRules = ngc.stepRules;
+const constants = ngc.constants;
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var game;
-
-    var channel = gameRoom.channel;
-    var logic = gameRoom.node;
+    let channel = gameRoom.channel;
+    // Important! This is the logic, and not the bot.
+    let logic = gameRoom.node;
+    // The node instance is available only in the init method.
+    let node;
 
     // Specify init function, and extend default stages.
     ////////////////////////////////////////////////////
@@ -27,8 +28,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Set the default step rule for all the stages.
     stager.setDefaultStepRule(stepRules.WAIT);
 
+    // Store global node reference.
+    stager.setOnInit(function() {
+        console.log(this.node);
+        node = this.node;
+    });
+
     stager.setDefaultCallback(function() {
-        this.node.timer.randomDone(2000);   
+        node.timer.randomDone(2000);
     });
 
     stager.extendStep('bidder', {
@@ -36,9 +43,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         roles: {
             BIDDER: {
                 cb: function() {
-                    var node, amount;
-                    node = this.node;
-                    amount = Math.floor(Math.random() * 101);
+                    let amount = Math.floor(Math.random() * 101);
                     setTimeout(function() {
                         node.say('OFFER', node.game.partner, amount);
                         node.done({ offer: amount});
@@ -47,10 +52,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             },
             RESPONDENT: {
                 cb: function() {
-                    var node;
-                    node = this.node;
-
-                    node.on.data('OFFER', function(msg) {
+                    node.on.data('OFFER', (msg) => {
                         node.done();
                     });
                 }
@@ -63,18 +65,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         partner: function() { return this.partner; },
         roles: {
             RESPONDENT: {
-                cb: function() {
-                    var node, response;
-                    
-                    that = this;
-                    node = this.node;
-                    if (Math.round(Math.random())) {
-                        response = 'ACCEPT';
-                    }
-                    else {
-                        response = 'REJECT';
-                    }
-                    node.say(response, node.game.partner, response);
+                cb: () => {
+                    let response = Math.random() > 0.5 ?
+                        'accepted' : 'rejected';
+
+                    node.say('RESPONSE', node.game.partner, response);
                     node.done({
                         value: node.game.offerReceived,
                         responseTo: node.game.partner,
@@ -83,16 +78,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             },
             BIDDER: {
-                cb: function() {
-                    var node;
-                    node = this.node;
-                    
-                    node.on.data('ACCEPT', function(msg) {
-                        node.info(' Your offer was accepted.');
-                        node.done();
-                    });
-                    node.on.data('REJECT', function(msg) {
-                        node.info(' Your offer was rejected.');
+                cb: () => {
+                    node.on.data('RESPONSE', (msg) => {
+                        node.info(' Your offer was ' + msg.data + '.');
                         node.done();
                     });
                 }
@@ -100,14 +88,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    // Prepare the game object to return.
-    /////////////////////////////////////
+    // Return the game object.
+    //////////////////////////
 
-    game = {};
-
-    // We serialize the game sequence before sending it.
-    game.plot = stager.getState();
-    game.nodename = 'bot';
-
-    return game;
+    return {
+        // We serialize the game sequence before sending it.
+        plot: stager.getState(),
+        nodename: 'bot'
+    };
 };
