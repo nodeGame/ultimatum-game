@@ -9,9 +9,7 @@
  */
 
 const ngc = require('nodegame-client');
-const Stager = ngc.Stager;
 const stepRules = ngc.stepRules;
-const constants = ngc.constants;
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
@@ -30,7 +28,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Store global node reference.
     stager.setOnInit(function() {
-        console.log(this.node);
         node = this.node;
     });
 
