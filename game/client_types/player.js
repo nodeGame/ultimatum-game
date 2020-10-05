@@ -10,23 +10,170 @@
  * http://www.nodegame.org
  */
 
-var ngc = require('nodegame-client');
-var Stager = ngc.Stager;
+const ngc = require('nodegame-client');
+const Stager = ngc.Stager;
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var cbs;
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
-
-    // Import other functions used in the game.
-    cbs = require(__dirname + '/includes/player.callbacks.js');
+    let channel = gameRoom.channel;
+    let node = gameRoom.node;
 
     // Specify init function, and extend steps.
 
     // Init callback.
-    stager.setOnInit(cbs.init);
+    stager.setOnInit(function() {
+        var header;
+
+        this.node.log('Init.');
+
+        // SETUP HEADER AND FRAME
+
+        // Add the header (by default on top).
+        // Try alternative positions: 'bottom', 'left', 'right', for instance:
+        // W.setHeaderPosition('right');
+        header = W.generateHeader();
+        // Add the main frame where the pages are loaded.
+        W.generateFrame();
+
+        // Uncomment to visualize the name of the stages.
+        //node.game.visualStage = node.widgets.append('VisualStage', header);
+
+        node.game.visualRound = node.widgets.append('VisualRound', header, {
+            // Offset one stage in the counter
+            stageOffset: 1,
+            // You can try alternative display modes:
+            // displayMode: [
+            //     'COUNT_DOWN_STAGES', 'COUNT_DOWN_STEPS', 'COUNT_DOWN_ROUNDS'
+            // ]
+            // displayMode: [
+            //     'COUNT_UP_STAGES', 'COUNT_UP_STEPS', 'COUNT_UP_ROUNDS'
+            // ]
+            // displayMode: [
+            //     'COUNT_UP_STAGES_TO_TOTAL',
+            //      'COUNT_UP_STEPS_TO_TOTAL',
+            //     'COUNT_UP_ROUNDS_TO_TOTAL'
+            // ]
+            // displayMode: [
+            //     'COUNT_UP_STAGES_TO_TOTAL',
+            //     'COUNT_UP_STEPS_TO_TOTAL_IFNOT1',
+            //     'COUNT_UP_ROUNDS_TO_TOTAL_IFNOT1'
+            // ]
+            // displayMode: [
+            //     'COUNT_UP_STAGES_TO_TOTAL',
+            //     'COUNT_UP_STEPS_IFNOT1',
+            //     'COUNT_UP_ROUNDS_IFNOT1'
+            // ]
+        });
+
+        node.game.visualTimer = node.widgets.append('VisualTimer', header);
+
+        // Done button to click.
+        node.game.donebutton = node.widgets.append('DoneButton', header);
+
+        // Additional debug information while developing the game.
+        // node.game.debugInfo = node.widgets.append('DebugInfo', header)
+
+
+        // Add event listeners valid for the whole game.
+
+        node.on('RESPONSE_DONE', function(response) {
+
+            // Tell the other player own response.
+            node.say('RESPONSE', node.game.partner, response);
+
+            // Write to screen.
+            W.write(' You ' + response + ' the offer.', W.gid('container'));
+
+            //////////////////////////////////////////////
+            // nodeGame hint:
+            //
+            // node.done() communicates to the server that
+            // the player has completed the current state.
+            //
+            // The parameters are send to the server with
+            // a SET message. This SET message has two
+            // properties by default:
+            //
+            // - time: time passed since the begin of the step
+            // - timeup: if a timeup happened
+            //
+            // which can be overwritten by the parameter.
+            //
+            // Any number of additional properties can
+            // be added and will be stored in the server.
+            //
+            /////////////////////////////////////////////
+            node.done({
+                value: node.game.offerReceived,
+                responseTo: node.game.partner,
+                response: response
+            });
+        });
+
+        // Add other functions are variables used during the game.
+
+        // Quiz widget (will be created later).
+        this.quiz = null;
+
+        this.quizTexts = {
+
+            howMuchMainText:
+                'How many coins will you divide with your partner?',
+            howMuchChoices: [
+                '50',
+                '100',
+                '0'
+            ],
+
+            rejectMainText: 'If you are a bidder what happens if ' +
+                'your partner rejects your offer?',
+            rejectChoices: [
+                'He does not get anything, I keep my share.',
+                'I get everything.',
+                'He gets what I offered, I get nothing.',
+                'Both get nothing.'
+            ],
+
+            disconnectMainText:
+                'Consider the following scenario. Four players ' +
+                '(A,B,C,D) are playing. B disconnects for more than ' +
+                '30 seconds, and the game is terminated. What happens then?',
+            disconnectChoices: [
+                'A,C,D are paid only the show up fee. B is not paid at all.',
+                'A,C,D are paid the show up fee plus the bonus collected ' +
+                    'so far. B is paid only the show up fee.',
+                'A,C,D are paid the show up fee plus the bonus collected ' +
+                    'so far. B is not paid at all.',
+                'All players are paid only the show up fee.',
+                'All players are paid the show up fee and the bonus ' +
+                    'collected so far.'
+            ]
+
+        };
+
+        // Questionnaire widget (to be created later).
+        this.quest = null;
+
+        this.questTexts = {
+            mainText: 'If the game was terminated because of a ' +
+                'player disconnection, in your opinion, why did the ' +
+                'other player disconnect?',
+            choices: [
+                'He or she was losing.',
+                'Technical failure.',
+                'The player found a more rewarding task.',
+                'The game was boring, not clear, too long, etc.',
+                'Not applicable.'
+            ],
+            freeText: 'Please report any additional comment to the ' +
+                'experimenters.'
+        };
+
+        // Set default language prefix.
+        W.setUriPrefix(node.player.lang.path);
+    }
+);
 
     ////////////////////////////////////////////////////////////
     // nodeGame hint: step propreties.
@@ -254,10 +401,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // types. For players, by default it is a call to `node.done()`.
                 ////////////////////////////////////////////////////////////////
                 timeup: function() {
-                    var rndBid =
-                        Math.floor(Math.random() *
-                                   (node.game.settings.COINS + 1));
-                    node.game.bid.setValues(rndBid);
+                    // Generates a random bid.
+                    node.game.bid.setValues();
                     node.done();
                 },
                 done: function(offer) {
@@ -271,7 +416,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         node.game.lastOffer = offer;
                     }
 
-                    // Write to text.
+                    // Write text.
                     root = W.gid('container');
                     W.writeln(' Your offer: ' +  offer +
                               '. Waiting for the respondent... ', root);
@@ -365,7 +510,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         roles: {
             RESPONDENT: {
                 timeup: function() {
-                    node.game.resTimeup();
+                    var root, response;
+                    response = Math.random() > 0.5 ? 'accepted' : 'rejected';
+                    console.log('randomaccept');
+                    node.emit('RESPONSE_DONE', response);
                 },
                 cb: function() {
                     W.setInnerHTML('theoffer', this.offerReceived);
@@ -378,19 +526,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         // `node.emit` fires an event locally. To send
                         // an event through the network use `node.say`.
                         ///////////////////////////////////////////////
-                        node.emit('RESPONSE_DONE', 'ACCEPT');
+                        node.emit('RESPONSE_DONE', 'accepted');
                     };
 
                     W.gid('reject').onclick = function() {
-                        node.emit('RESPONSE_DONE', 'REJECT');
+                        node.emit('RESPONSE_DONE', 'rejected');
                     };
                 }
             },
             BIDDER: {
                 cb: function() {
-                    var root;
-                    root = W.gid('container');
-
                     //////////////////////////////////////////////
                     // nodeGame hint:
                     //
@@ -408,14 +553,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     // For example, node.on('in.say.DATA', cb) can
                     // listen to all incoming DATA messages.
                     /////////////////////////////////////////////
-                    node.on.data('ACCEPT', function(msg) {
+                    node.on.data('RESPONSE', function(msg) {
                         node.game.visualTimer.stop();
-                        W.write(' Your offer was accepted.', root);
-                        node.timer.randomDone(3000);
-                    });
-                    node.on.data('REJECT', function(msg) {
-                        node.game.visualTimer.stop();
-                        W.write(' Your offer was rejected.', root);
+                        // Write inside the element with id "containter".
+                        W.write(' Your offer was ' + msg.data + '.',
+                                W.gid('container'));
                         node.timer.randomDone(3000);
                     });
                 },
@@ -480,7 +622,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 email: {
                     texts: {
                         label: 'Enter your email (optional):',
-                        errString: 'Please enter a valid email and retry'
+                        errString: 'Please enter a valid email and retry',
+                        setMsg: true // Sends a set message for logic's db.
                     }
                 },
                 feedback: { minLength: 50 }

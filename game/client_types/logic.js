@@ -9,8 +9,6 @@
  */
 const ngc = require('nodegame-client');
 const J = ngc.JSUS;
-const fs = require('fs');
-const path = require('path');
 
 //////////////////////////////////////
 // nodeGame hint: the exports function
@@ -27,8 +25,8 @@ const path = require('path');
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Access important objects: the channel, and the node instance.
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
+    let channel = gameRoom.channel;
+    let node = gameRoom.node;
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
@@ -38,14 +36,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
         // If players disconnects and then re-connects within the same round
         // we need to take into account only the final bids within that round.
-        this.lastBids = {};
+        // this.lastBids = {};
 
         // "STEPPING" is the last event emitted before the stage is updated.
-        node.on('STEPPING', function() {
-            saveEveryStep();
-            // Resets last bids.
-            node.game.lastBids = {};
-        });
+        // node.on('STEPPING', function() {
+        //     saveEveryStep();
+        //     // Resets last bids.
+        //     // node.game.lastBids = {};
+        // });
 
         // Add session name to data in DB.
         this.memory.on('insert', function(o) {
@@ -54,24 +52,25 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
         // Update the Payoffs
         node.on.data('done', function(msg) {
-            var resWin, bidWin, response;
-            if (msg.data && msg.data.response === 'ACCEPT') {
+            var resWin, bidWin, response, bidder, responder;
+            if (msg.data && msg.data.response === 'accepted') {
                 response = msg.data;
                 resWin = parseInt(response.value, 10);
                 bidWin = settings.COINS - resWin;
 
                 // Save the results in a temporary variables. If the round
                 // finishes without a disconnection we will add them to the .
-                node.game.lastBids[msg.from] = resWin;
-                node.game.lastBids[response.responseTo] = bidWin;
-            }
-        });
+                // node.game.lastBids[msg.from] = resWin;
+                // node.game.lastBids[response.responseTo] = bidWin;
 
-        // Logging errors from remote clients to console.
-        node.on('in.say.LOG', function(msg) {
-            if (msg.text === 'error' && msg.stage.stage) {
-                console.log('Error from client: ', msg.from);
-                console.log('Error msg: ', msg.data);
+                bidder = channel.registry.getClient(response.responseTo);
+                bidder.win += bidWin;
+                console.log('Added to ' + bidder.id + ' ' + bidWin + ' ECU');
+
+
+                responder = channel.registry.getClient(msg.from);
+                responder.win += resWin;
+                console.log('Added to ' + responder.id + ' ' + resWin + ' ECU');
             }
         });
 
@@ -89,10 +88,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     /////////////////////////////////////
     stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
-        function() {
-            var step = node.game.plot.normalizeGameStage('questionnaire');
-            node.game.gotoStep(step);
-        }
+        function() { node.game.gotoStep('questionnaire'); }
     ]);
 
     //////////////////////////////////////
@@ -132,6 +128,23 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // The `reconnect` property can define a callback that handles this.
     ////////////////////////////////////////////////////////////////////
     stager.extendStage('ultimatum', {
+        init: function() {
+            ////////////////////////////////////////////////////
+            // nodeGame hint: preparing database for data output
+            //
+            // The instructions below are optional, but they make the
+            // data saving process more convenient
+            //
+            // You can create views on the main database that automatically
+            // save to the database at periodic intervals.
+            /////////////////////////////////////////////////
+
+            // Creates a view for items in the ultimatum stage (all steps).
+            // We will use it to save items after each ultimatum round.
+            node.game.memory.view('ultimatum', function(item) {
+                return node.game.isStage('ultimatum');
+            });
+        },
         reconnect: function(p, reconOptions) {
             var offer, setup, other, role, bidder;
 
@@ -197,6 +210,21 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     });
 
+    ////////////////////////////////////////////
+    // nodeGame hint: save ultimatum round data
+    //
+    // Save the data at the exit function
+    ////////////////////////////////////////////////////////
+    stager.extendStep('respondent', {
+        exit: function() {
+            node.game.memory.ultimatum.save('ultimatum.csv', {
+                // headers: [ 'player', 'timestamp',  ],
+                flatten: true,           // Merge items together.
+                flattenGroups: 'player'  // One row per player.
+            });
+        }
+    });
+
     ////////////////////////////////////////////////////
     // nodeGame hint: remove the default step-properties
     //
@@ -208,18 +236,25 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
+        init: function() {
+
+            // Feedback.
+            node.game.memory.view('feedback').save('feedback.csv', {
+                headers: [ 'time', 'timestamp', 'player', 'feedback' ],
+                recurrent: true,
+                recurrentInterval: 50000
+            });
+
+            // Email.
+            node.game.memory.view('email').save('email.csv', {
+                headers: [ 'timestamp', 'player', 'email' ],
+                recurrent: true,
+                recurrentInterval: 50000
+            });
+        },
         cb: function endgame() {
             console.log('FINAL PAYOFF PER PLAYER');
             console.log('***********************');
-
-            // Save email to file system.
-            node.on.data('email', function(msg) {
-                appendToFile('email', msg.data, msg.from);
-            });
-
-            node.on.data('feedback', function(msg) {
-                appendToFile('feedback', msg.data, msg.from);
-            });
 
             gameRoom.computeBonus({
                 say: true,   // default false
@@ -237,66 +272,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             // Dump all memory.
             node.game.memory.save('memory_all.json');
-
-
         },
         minPlayers: undefined
     });
-
-
-    // ## Helper functions.
-
-    function saveEveryStep() {
-        var currentStage, db, p, gain, prefix;
-        var client;
-
-        currentStage = node.game.getCurrentGameStage();
-
-        for (p in node.game.lastBids) {
-            if (node.game.lastBids.hasOwnProperty(p)) {
-
-                // Respondent payoff.
-                client = channel.registry.getClient(p);
-
-                gain = node.game.lastBids[p];
-                if (gain) {
-                    client.win = !client.win ? gain : client.win + gain;
-                    console.log('Added to ' + p + ' ' + gain + ' ECU');
-                }
-            }
-        }
-
-        db = node.game.memory.stage[currentStage];
-
-        if (db && db.size()) {
-            // Save in two formats.
-            prefix = path.join(gameRoom.dataDir, 'memory_' + currentStage);
-            db.save(prefix + '.csv', { flags: 'w' });
-            db.save(prefix + '.nddb', { flags: 'w' });
-
-            console.log('Round data saved ', currentStage);
-        }
-    }
-
-    /**
-     * ### appendToFile
-     *
-     * Appends a row to a csv file (no checkings)
-     *
-     * @param {string} filename The name of the file
-     * @param {string} text The data to save
-     * @param {string} clientId The client id
-     */
-    function appendToFile(filename, text, clientId) {
-        var row;
-        row  = '"' + clientId + '", "' + text + '"\n';
-
-        fs.appendFile(path.join(gameRoom.dataDir, filename + '.csv'), row,
-                      function(err) {
-                          if (err) {
-                              console.log(err);
-                              console.log(row);
-                          }
-                      });
-    }
 };
