@@ -12,24 +12,18 @@ const ngc = require('nodegame-client');
 const stepRules = ngc.stepRules;
 
 // Export the game-creating function.
-module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
+module.exports = function(treatmentName, settings, stager,
+                          setup, gameRoom, node) {
 
     let channel = gameRoom.channel;
     // Important! This is the logic, and not the bot.
     let logic = gameRoom.node;
-    // The node instance is available only in the init method.
-    let node;
 
     // Specify init function, and extend default stages.
     ////////////////////////////////////////////////////
 
     // Set the default step rule for all the stages.
     stager.setDefaultStepRule(stepRules.WAIT);
-
-    // Store global node reference.
-    stager.setOnInit(function() {
-        node = this.node;
-    });
 
     stager.setDefaultCallback(function() {
         node.timer.randomDone(2000);
