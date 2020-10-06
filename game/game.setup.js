@@ -8,6 +8,8 @@
  */
 module.exports = function(settings, stages) {
 
+    let debug = true;
+
     return {
 
         // Metadata. Taken from package.json. Can be overwritten.
@@ -19,13 +21,17 @@ module.exports = function(settings, stages) {
 
         // If debug is false (default false), exception are caught and
         // and printed to screen, and the game continues.
-        debug: true,
+        debug: debug,
 
         // verbosity: -1,
 
         window: {
-            promptOnleave: !game.debug,
+
+            promptOnleave: !debug,
+
             disableRightClick: false
+
+
         }
     };
 };
