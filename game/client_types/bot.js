@@ -26,7 +26,8 @@ module.exports = function(treatmentName, settings, stager,
     stager.setDefaultStepRule(stepRules.WAIT);
 
     stager.setDefaultCallback(function() {
-        node.timer.randomDone(2000);
+        // Randomly executes node.done between 1 (default) and 3 seconds.
+        node.timer.random(3000).done();
     });
 
     stager.extendStep('bidder', {
@@ -35,15 +36,20 @@ module.exports = function(treatmentName, settings, stager,
             BIDDER: {
                 cb: function() {
                     let amount = Math.floor(Math.random() * 101);
-                    setTimeout(function() {
-                        node.say('OFFER', node.game.partner, amount);
-                        node.done({ offer: amount});
+                    node.timer.setTimeout(function() {
+                        node.say('BID', node.game.partner, amount);
+                        // Randomly executes node.done between 2 and 4 seconds.
+                        node.timer.random(2000, 4000).done({ offer: amount});
                     }, 2000);
                 }
             },
             RESPONDENT: {
+                init: function() {
+                    node.game.offerReceived = null;
+                },
                 cb: function() {
-                    node.on.data('OFFER', (msg) => {
+                    node.on.data('BID', (msg) => {
+                        node.game.offerReceived = msg.data;
                         node.done();
                     });
                 }
@@ -61,7 +67,7 @@ module.exports = function(treatmentName, settings, stager,
                         'accepted' : 'rejected';
 
                     node.say('RESPONSE', node.game.partner, response);
-                    node.done({
+                    node.timer.random(4000).done({
                         value: node.game.offerReceived,
                         responseTo: node.game.partner,
                         response: response
@@ -72,7 +78,7 @@ module.exports = function(treatmentName, settings, stager,
                 cb: () => {
                     node.on.data('RESPONSE', (msg) => {
                         node.info(' Your offer was ' + msg.data + '.');
-                        node.done();
+                        node.timer.random(1000).done();
                     });
                 }
             }
