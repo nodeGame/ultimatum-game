@@ -31,47 +31,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
 
-        console.log('********************** ultimatum ' + gameRoom.name +
-                    ' *********************');
-
-        // If players disconnects and then re-connects within the same round
-        // we need to take into account only the final bids within that round.
-        // this.lastBids = {};
-
-        // "STEPPING" is the last event emitted before the stage is updated.
-        // node.on('STEPPING', function() {
-        //     saveEveryStep();
-        //     // Resets last bids.
-        //     // node.game.lastBids = {};
-        // });
-
         // Add session name to data in DB.
         this.memory.on('insert', function(o) {
             o.session = node.nodename;
-        });
-
-        // Update the Payoffs
-        node.on.data('done', function(msg) {
-            var resWin, bidWin, response, bidder, responder;
-            if (msg.data && msg.data.response === 'accepted') {
-                response = msg.data;
-                resWin = parseInt(response.value, 10);
-                bidWin = settings.COINS - resWin;
-
-                // Save the results in a temporary variables. If the round
-                // finishes without a disconnection we will add them to the .
-                // node.game.lastBids[msg.from] = resWin;
-                // node.game.lastBids[response.responseTo] = bidWin;
-
-                bidder = channel.registry.getClient(response.responseTo);
-                bidder.win += bidWin;
-                console.log('Added to ' + bidder.id + ' ' + bidWin + ' ECU');
-
-
-                responder = channel.registry.getClient(msg.from);
-                responder.win += resWin;
-                console.log('Added to ' + responder.id + ' ' + resWin + ' ECU');
-            }
+            let role = node.game.matcher.getRoleFor(o.player);
+            if (role) o.role = role;
         });
 
         console.log('init');
@@ -144,67 +108,54 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             node.game.memory.view('ultimatum', function(item) {
                 return node.game.isStage('ultimatum');
             });
+
+
+            // Update the Payoffs.
+            node.on.data('done', function(msg) {
+                var resWin, bidWin, response, bidder, responder;
+
+                // If Respondent accepted offer, update earnings.
+                if (msg.data && msg.data.response === 'accepted') {
+                    response = msg.data;
+
+                    resWin = response.offer;
+                    bidWin = settings.COINS - resWin;
+
+                    bidder = channel.registry.getClient(response.responseTo);
+                    bidder.win += bidWin;
+                    console.log('Added to', bidder.id, bidWin, 'ECU');
+
+                    responder = channel.registry.getClient(msg.from);
+                    responder.win += resWin;
+                    console.log('Added to', responder.id, resWin, 'ECU');
+                }
+            });
         },
-        reconnect: function(p, reconOptions) {
-            var offer, setup, other, role, bidder;
 
-            // Get old setup for re-connecting player.
-            setup = node.game.matcher.getSetupFor(p.id);
+        reconnect: function(p, opts) {
+            var offer, partner, role;
 
-            other = setup.partner;
-            role = setup.role;
+            role = opts.plot.role;
+            partner = opts.plot.partner;
 
-            if (!reconOptions.plot) reconOptions.plot = {};
-            reconOptions.role = role;
-            reconOptions.other = other;
+            // Reconneting client has role RESPONDENT, in step 'respondent',
+            // and it is not DONE (must take decision).
+            if (role === 'RESPONDENT' &&
+                node.game.isStep(2) &&
+                !opts.willBeDone) {
 
-            if (node.player.stage.step === 3 && role !== 'SOLO') {
-                bidder = role === 'RESPONDENT' ? other : p.id;
-                offer = node.game.memory.stage[node.game.getPreviousStep()]
-                    .select('player', '=', bidder).first();
-                if (!offer || 'number' !== typeof offer.offer) {
-                    // Set it to zero for now.
-                    node.err('ReconnectUltimatum: could not find ' +
-                             'offer for: ' + p.id);
-                    offer = 0;
+                offer = node.game.memory
+                    .stage[node.game.getPreviousStep()]
+                    .select('player', '=', partner).first();
+
+                // It may be undefined if, for instance, the bidder also
+                // disconnected in the previous round.
+                if (offer) {
+                    opts.offer = offer.offer;
+                    opts.cb = function(options) {
+                        this.offerReceived = options.offer;
+                    };
                 }
-                else {
-                    offer = offer.offer;
-                }
-
-                // Store reference to last offer in game.
-                reconOptions.offer = offer;
-            }
-
-            // Respondent on respondent stage must get back offer.
-            if (role === 'RESPONDENT') {
-                reconOptions.cb = function(options) {
-                    this.plot.tmpCache('frame', 'resp.html');
-                    this.role = options.role;
-                    this.other = options.other;
-                    this.offerReceived = options.offer;
-                };
-            }
-
-            else if (role === 'BIDDER') {
-                reconOptions.cb = function(options) {
-                    this.plot.tmpCache('frame', 'bidder.html');
-                    this.role = options.role;
-                    this.other = options.other;
-                    if (this.node.player.stage.step === 3) {
-                        this.lastOffer = options.offer;
-                        this.node.on('LOADED', function() {
-                            this.node.emit('BID_DONE', this.lastOffer, false);
-                        });
-                    }
-                };
-            }
-
-            else if (role === 'SOLO') {
-                reconOptions.cb = function(options) {
-                    this.plot.tmpCache('frame', 'solo.html');
-                    this.role = options.role;
-                };
             }
         }
 
@@ -218,9 +169,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('respondent', {
         exit: function() {
             node.game.memory.ultimatum.save('ultimatum.csv', {
-                // headers: [ 'player', 'timestamp',  ],
-                flatten: true,           // Merge items together.
-                flattenGroups: 'player'  // One row per player.
+                // Specify headers in advance.
+                headers: [
+                    "session", "player", "stage.round", "role", "offer",
+                    "response", "timeup", "time_1.1.1", "time_1.2.1",
+                    "time_1.1.2", "time_1.2.2"
+                ],
+                flatten: true,            // Merge items together.
+                flattenByGroup: 'player',  // One row per player every round.
+                incremental: true,        // Adds updates to same file.
             });
         }
     });

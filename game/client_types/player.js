@@ -1,6 +1,6 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2018 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2020 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Handles biddings, and responses between two players.
@@ -25,14 +25,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.setOnInit(function() {
         var header;
 
-        this.node.log('Init.');
+        node.log('Init.');
 
         // SETUP HEADER AND FRAME
 
         // Add the header (by default on top).
+        header = W.generateHeader();
         // Try alternative positions: 'bottom', 'left', 'right', for instance:
         // W.setHeaderPosition('right');
-        header = W.generateHeader();
+
         // Add the main frame where the pages are loaded.
         W.generateFrame();
 
@@ -42,7 +43,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node.game.visualRound = node.widgets.append('VisualRound', header, {
             // Offset one stage in the counter
             stageOffset: 1,
-            // You can try alternative display modes:
+            // Try alternative display modes (may mix together modes):
             // displayMode: [
             //     'COUNT_DOWN_STAGES', 'COUNT_DOWN_STEPS', 'COUNT_DOWN_ROUNDS'
             // ]
@@ -69,14 +70,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node.game.visualTimer = node.widgets.append('VisualTimer', header);
 
         // Done button to click.
-        node.game.donebutton = node.widgets.append('DoneButton', header);
+        node.game.doneButton = node.widgets.append('DoneButton', header);
 
-        // Additional debug information while developing the game.
+        // Add additional debug information while developing the game.
         // node.game.debugInfo = node.widgets.append('DebugInfo', header)
-
 
         // Add event listeners valid for the whole game.
 
+        // Note: this listener isn't strictly necessary for this game,
+        // however it is useful to illustrate how node.emit and node.on
+        // work in tandem.
         node.on('RESPONSE_DONE', function(response) {
 
             // Tell the other player own response.
@@ -105,7 +108,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             //
             /////////////////////////////////////////////
             node.done({
-                value: node.game.offerReceived,
+                offer: node.game.offerReceived,
                 responseTo: node.game.partner,
                 response: response
             });
@@ -308,10 +311,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         },
         done: function() {
             var answers, isTimeup;
-            answers = this.quiz.getValues({
-                markAttempt: true,
-                highlight: true
-            });
+            answers = this.quiz.getValues();
             isTimeup = node.game.timer.isTimeup();
             if (!answers.isCorrect && !isTimeup) return false;
             return answers;
@@ -389,6 +389,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                             settings.COINS + ' to another player'
                     }
                 },
+
                 /////////////////////////////////////////////////////////////
                 // nodeGame hint: the timeup parameter
                 //
@@ -405,30 +406,25 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     node.game.bid.setValues();
                     node.done();
                 },
-                done: function(offer) {
-                    var root, timeup;
-                    timeup = this.timer.isTimeup();
 
-                    // Variable offer is defined only in case of a reconnection.
-                    if ('undefined' !== typeof offer) {
-                        offer = node.game.bid.getValues().value;
-                        // Save references.
-                        node.game.lastOffer = offer;
-                    }
+                done: function(result) {
+                    var root, offer;
+
+                    // result is returned by node.game.bid.getValues()
+                    offer = result.value;
 
                     // Write text.
                     root = W.gid('container');
                     W.writeln(' Your offer: ' +  offer +
                               '. Waiting for the respondent... ', root);
 
+                    // Notify the other player.
+                    node.say('BID', node.game.partner, offer);
 
-                    if ('undefined' !== typeof offer) {
-                        // Notify the other player.
-                        node.say('OFFER', node.game.partner, offer);
-
-                        // Notify the server.
-                        return { offer: offer };
-                    }
+                    // Notify server.
+                    // Note: If the done callback does not return a value,
+                    // then result is sent to server.
+                    return { offer: offer };
                 }
             },
             RESPONDENT: {
@@ -457,7 +453,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 cb: function() {
                     var that;
                     // It was a reconnection.
-                    if (this.offerReceived !== null) node.done();
+                    // if (this.offerReceived !== null) node.done();
 
                     //////////////////////////////////////////////
                     // nodeGame hint: context
@@ -475,7 +471,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     // function of the method `node.on.data`.
                     ////////////////////////////////////////////////////////////
                     that = this;
-                    node.on.data('OFFER', function(msg) {
+                    node.on.data('BID', function(msg) {
                         that.offerReceived = msg.data;
                         node.done();
                     });
@@ -485,13 +481,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             SOLO: {
                 frame: 'solo.html',
                 cb: function() {
-                    this.node.timer.randomDone();
+                    node.timer.random().done();
                 }
             }
         }
     });
 
     stager.extendStep('respondent', {
+
         /////////////////////////////////////////////////////////////
         // nodeGame hint: role and partner
         //
@@ -506,9 +503,18 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //////////////////////////////////////////////////////////
         role: function() { return this.role; },
         partner: function() { return this.partner; },
+
+        //////////////////////////////////////////
+        // nodeGame hint: the donebutton parameter
+        //
+        // The DoneButton widget reads it disables it (false).
+        // If string, it replaces the text on the button.
+        /////////////////
         donebutton: false,
+
         roles: {
             RESPONDENT: {
+                frame: 'resp.html',
                 timeup: function() {
                     var root, response;
                     response = Math.random() > 0.5 ? 'accepted' : 'rejected';
@@ -516,6 +522,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     node.emit('RESPONSE_DONE', response);
                 },
                 cb: function() {
+                    // If for any reason an offer is not found here (e.g.,
+                    // bidder disconnected in previous round, show an error
+                    // and reject.)
+                    if (!this.offerReceived) {
+                        node.emit('RESPONSE_DONE', 'rejected');
+                        return;
+                    }
                     W.setInnerHTML('theoffer', this.offerReceived);
                     W.show('offered');
 
@@ -535,6 +548,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             },
             BIDDER: {
+                frame: 'bidder.html',
                 cb: function() {
                     //////////////////////////////////////////////
                     // nodeGame hint:
@@ -558,14 +572,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         // Write inside the element with id "containter".
                         W.write(' Your offer was ' + msg.data + '.',
                                 W.gid('container'));
-                        node.timer.randomDone(3000);
+                        node.timer.random().done(3000);
                     });
                 },
                 timeup: null
             },
             SOLO: {
+                frame: 'solo.html',
                 cb: function() {
-                    this.node.timer.randomDone();
+                    node.timer.random().done();
                 }
             }
         }
@@ -629,13 +644,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 feedback: { minLength: 50 }
             }
         },
-        //////////////////////////////////////////
-        // nodeGame hint: the donebutton parameter
-        //
-        // The DoneButton widget reads this: it can set
-        // the text on the button, or disable it (false).
-        /////////////////
-        donebutton: false,
+        init: function() {
+            node.game.visualTimer.destroy();
+            node.game.doneButton.destroy();
+        },
         // Callback using for testing purposes, ignore it
         cb: function() {
             console.log('PHANTOMJS EXITING');

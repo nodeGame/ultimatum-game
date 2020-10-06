@@ -68,7 +68,7 @@ module.exports = function(treatmentName, settings, stager,
 
                     node.say('RESPONSE', node.game.partner, response);
                     node.timer.random(4000).done({
-                        value: node.game.offerReceived,
+                        offer: node.game.offerReceived,
                         responseTo: node.game.partner,
                         response: response
                     });
