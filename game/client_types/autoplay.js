@@ -23,35 +23,38 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     let origInit = stager.getOnInit();
     if (origInit) stager.setDefaultProperty('origInit', origInit);
     stager.setOnInit(function() {
+        // Call the original init function, if found.
         let origInit = node.game.getProperty('origInit');
         if (origInit) origInit.call(this);
+
+        // Auto play, depedending on the step.
         node.on('PLAYING', function() {
-            let id = node.game.getCurrentStepObj().id;
-            setTimeout(function() {
+            let id = node.game.getStepId();
+            node.timer.setTimeout(function() {
                 // Widget steps.
                 if (id === 'quiz' ||
                     id === 'questionnaire' ||
                     id === 'mood') {
 
-                        node.widgets.lastAppended.setValues({
-                            correct: true
-                        });
+                    node.widgets.lastAppended.setValues({ correct: true });
                 }
 
-                if ((node.game.role === 'BIDDER' && id === 'bidder') ||
+                // Invoking timeup in decision stages.
+                else if ((node.game.role === 'BIDDER' && id === 'bidder') ||
                         (node.game.role === 'RESPONDENT' &&
                         id === 'respondent')) {
 
-                    node.timer.randomExec(function() {
-                        node.game.timer.doTimeUp();
-                    });
+                    node.timer.random.timeup();
                 }
+
+                // Call done in other stages, exept the last one and precache.
                 else if (id !== 'precache' && id !== 'endgame') {
-                    node.timer.randomDone(2000);
+                    node.timer.random(2000).done();
                 }
 
             }, 2000);
         });
+
     });
 
     game.plot = stager.getState();

@@ -112,22 +112,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             // Update the Payoffs.
             node.on.data('done', function(msg) {
-                var resWin, bidWin, response, bidder, responder;
+                var response;
 
                 // If Respondent accepted offer, update earnings.
                 if (msg.data && msg.data.response === 'accepted') {
                     response = msg.data;
 
-                    resWin = response.offer;
-                    bidWin = settings.COINS - resWin;
-
-                    bidder = channel.registry.getClient(response.responseTo);
-                    bidder.win += bidWin;
-                    console.log('Added to', bidder.id, bidWin, 'ECU');
-
-                    responder = channel.registry.getClient(msg.from);
-                    responder.win += resWin;
-                    console.log('Added to', responder.id, resWin, 'ECU');
+                    // Update earnings counts, so that it can be saved
+                    // with GameRoom.computeBonus.
+                    gameRoom.updateWin(response.responseTo,
+                                       settings.COINS - response.offer);
+                    gameRoom.updateWin(msg.from, response.offer);
                 }
             });
         },
