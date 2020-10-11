@@ -19,6 +19,44 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     let channel = gameRoom.channel;
     let node = gameRoom.node;
 
+    // Quiz and Questionnaire texts.
+
+    let quizTexts = {
+
+        howMuchMainText:
+            'How many coins will you divide with your partner?',
+        howMuchChoices: [
+            '50',
+            '100',
+            '0'
+        ],
+
+        rejectMainText: 'If you are a bidder what happens if ' +
+            'your partner rejects your offer?',
+        rejectChoices: [
+            'He does not get anything, I keep my share.',
+            'I get everything.',
+            'He gets what I offered, I get nothing.',
+            'Both get nothing.'
+        ],
+
+        disconnectMainText:
+            'Consider the following scenario. Four players ' +
+            '(A,B,C,D) are playing. B disconnects for more than ' +
+            '30 seconds, and the game is terminated. What happens then?',
+        disconnectChoices: [
+            'A,C,D are paid only the show up fee. B is not paid at all.',
+            'A,C,D are paid the show up fee plus the bonus collected ' +
+                'so far. B is paid only the show up fee.',
+            'A,C,D are paid the show up fee plus the bonus collected ' +
+                'so far. B is not paid at all.',
+            'All players are paid only the show up fee.',
+            'All players are paid the show up fee and the bonus ' +
+                'collected so far.'
+        ]
+
+    };
+
     // Specify init function, and extend steps.
 
     // Init callback.
@@ -41,8 +79,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //node.game.visualStage = node.widgets.append('VisualStage', header);
 
         node.game.visualRound = node.widgets.append('VisualRound', header, {
-            // Offset one stage in the counter
-            stageOffset: 1,
             // Try alternative display modes (may mix together modes):
             // displayMode: [
             //     'COUNT_DOWN_STAGES', 'COUNT_DOWN_STEPS', 'COUNT_DOWN_ROUNDS'
@@ -114,65 +150,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
         });
 
-        // Add other functions are variables used during the game.
-
-        // Quiz widget (will be created later).
-        this.quiz = null;
-
-        this.quizTexts = {
-
-            howMuchMainText:
-                'How many coins will you divide with your partner?',
-            howMuchChoices: [
-                '50',
-                '100',
-                '0'
-            ],
-
-            rejectMainText: 'If you are a bidder what happens if ' +
-                'your partner rejects your offer?',
-            rejectChoices: [
-                'He does not get anything, I keep my share.',
-                'I get everything.',
-                'He gets what I offered, I get nothing.',
-                'Both get nothing.'
-            ],
-
-            disconnectMainText:
-                'Consider the following scenario. Four players ' +
-                '(A,B,C,D) are playing. B disconnects for more than ' +
-                '30 seconds, and the game is terminated. What happens then?',
-            disconnectChoices: [
-                'A,C,D are paid only the show up fee. B is not paid at all.',
-                'A,C,D are paid the show up fee plus the bonus collected ' +
-                    'so far. B is paid only the show up fee.',
-                'A,C,D are paid the show up fee plus the bonus collected ' +
-                    'so far. B is not paid at all.',
-                'All players are paid only the show up fee.',
-                'All players are paid the show up fee and the bonus ' +
-                    'collected so far.'
-            ]
-
-        };
-
-        // Questionnaire widget (to be created later).
-        this.quest = null;
-
-        this.questTexts = {
-            mainText: 'If the game was terminated because of a ' +
-                'player disconnection, in your opinion, why did the ' +
-                'other player disconnect?',
-            choices: [
-                'He or she was losing.',
-                'Technical failure.',
-                'The player found a more rewarding task.',
-                'The game was boring, not clear, too long, etc.',
-                'Not applicable.'
-            ],
-            freeText: 'Please report any additional comment to the ' +
-                'experimenters.'
-        };
-
         // Set default language prefix.
         W.setUriPrefix(node.player.lang.path);
     }
@@ -210,32 +187,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('precache', {
-        //////////////////////////////////////////////
-        // nodeGame hint:
-        //
-        // Pages can be preloaded with this method: W.preCache()
-        //
-        // The content of a URI is cached in an array, and
-        // loaded again from there when needed.
-        // Pages that embed JS code should be cached with caution.
-        /////////////////////////////////////////////
-        cb: function() {
-            W.lockScreen('Loading...');
-            console.log('pre-caching...');
-            W.preCache([
-                // Precache some pages for demonstration.
-                'languageSelection.html',
-                'quiz.html',
-                'questionnaire.html'
-            ], function() {
-                console.log('Precache done.');
-                // Pre-Caching done; proceed to the next stage.
-                node.done();
-            });
-        }
-    });
-
     stager.extendStep('instructions', {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the settings object
@@ -262,59 +213,41 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // game folder. However, they can also be loaded from the
         // views/ directory (if not found in public/).
         /////////////////////////////////////////////////////////////
-        frame: 'quiz.html',
-        cb: function() {
-            var w, qt, t;
-            t = this.settings.treatmentName;
-            qt = this.quizTexts;
-
-            /////////////////////////////////////////////////////////////
-            // nodeGame hint: the widget collection
-            //
-            // Widgets are re-usable components with predefined methods,
-            // such as: hide, highlight, disable, getValues, etc.
-            // Here we use the `ChoiceManager` widget to create a quiz page.
-            ////////////////////////////////////////////////////////////////
-            w = node.widgets;
-            this.quiz = w.append('ChoiceManager', W.gid('quiz'), {
-                id: 'quizzes',
-                title: false,
+        // frame: 'quiz.html',
+        widget: {
+            name: 'ChoiceManager',
+            title: false,
+            options: {
                 forms: [
-                    w.get('ChoiceTable', {
+                    {
+                        name: 'ChoiceTable',
                         id: 'howMuch',
-                        shuffleChoices: true,
-                        title: false,
-                        choices: qt.howMuchChoices,
-                        correctChoice: 1,
-                        mainText: qt.howMuchMainText
-                    }),
-                    w.get('ChoiceTable', {
+                        mainText: quizTexts.howMuchMainText,
+                        choices: quizTexts.howMuchChoices,
+                        correctChoice: 1
+
+                    },
+                    {
+                        name: 'ChoiceTable',
                         id: 'reject',
-                        shuffleChoices: true,
-                        title: false,
                         orientation: 'v',
-                        choices: qt.rejectChoices,
-                        correctChoice: 3,
-                        mainText: qt.rejectMainText
-                    }),
-                    w.get('ChoiceTable', {
+                        mainText: quizTexts.rejectMainText,
+                        choices: quizTexts.rejectChoices,
+                        correctChoice: 3
+                    },
+                    {
+                        name: 'ChoiceTable',
                         id: 'disconnect',
-                        shuffleChoices: true,
-                        title: false,
                         orientation: 'v',
-                        choices: qt.disconnectChoices,
-                        correctChoice: t === 'pp' ? 1 : 3,
-                        mainText: qt.disconnectMainText
-                    })
-                ]
-            });
-        },
-        done: function() {
-            var answers, isTimeup;
-            answers = this.quiz.getValues();
-            isTimeup = node.game.timer.isTimeup();
-            if (!answers.isCorrect && !isTimeup) return false;
-            return answers;
+                        mainText: quizTexts.disconnectMainText,
+                        choices: quizTexts.disconnectChoices,
+                        correctChoice: treatmentName === 'pp' ? 1 : 3
+                    }
+                ],
+                formsOptions: {
+                    shuffleChoices: true
+                }
+            }
         }
     });
 
@@ -383,8 +316,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         min: 0,
                         max: settings.COINS,
                         requiredChoice: true,
-                        className: 'centered',
-                        root: 'container',
+                        // className: 'centered',
+                        // root: 'container',
                         mainText: 'Make an offer between 0 and ' +
                             settings.COINS + ' to another player'
                     }
@@ -588,19 +521,37 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('questionnaire', {
         cb: function() {
-            var qt;
-            qt = this.questTexts;
+            var options;
+
+            options = {
+                id: 'quest',
+                title: false,
+                mainText: 'If the game was terminated because of a ' +
+                          'player disconnection, in your opinion, why ' +
+                          'did the other player disconnect?',
+                choices: [
+                    'He or she was losing.',
+                    'Technical failure.',
+                    'The player found a more rewarding task.',
+                    'The game was boring, not clear, too long, etc.',
+                    'Not applicable.'
+                ],
+                freeText: 'Please report any additional comment to the ' +
+                          'experimenters.',
+                shuffleChoices: true,
+                orientation: 'v'
+            };
+
+            /////////////////////////////////////////////////////////////
+            // nodeGame hint: the widget collection
+            //
+            // TODO: fix here.
+            // Widgets are re-usable components with predefined methods,
+            // such as: hide, highlight, disable, getValues, etc.
+            ////////////////////////////////////////////////////////////////
             this.quest = node.widgets.append('ChoiceTable',
                                              W.gid('quiz'),
-                                             {
-                                                 id: 'quest',
-                                                 mainText: qt.mainText,
-                                                 choices: qt.choices,
-                                                 freeText: qt.freeText,
-                                                 title: false,
-                                                 shuffleChoices: true,
-                                                 orientation: 'v'
-                                             });
+                                             options);
         },
         frame: 'questionnaire.html',
         /////////////////////////////////////////////////////////////
@@ -611,7 +562,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Other return values are sent to the server, and replace any
         // parameter previously passed to `node.done`.
         //////////////////////////////////////////////
-        done: function(args) {
+        done: function() {
             var answers, isTimeup;
             answers = this.quest.getValues();
             isTimeup = node.game.timer.isTimeup();
@@ -624,26 +575,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
-        frame: 'generic.htm',
         // Another widget-step (see the mood step above).
-        widget: {
-            name: 'EndScreen',
-            root: 'container',
-            options: {
-                panel: false,
-                title: false,
-                showEmailForm: true,
-                showFeedbackForm: true,
-                email: {
-                    texts: {
-                        label: 'Enter your email (optional):',
-                        errString: 'Please enter a valid email and retry',
-                        setMsg: true // Sends a set message for logic's db.
-                    }
-                },
-                feedback: { minLength: 50 }
-            }
-        },
+        widget: 'EndScreen',
         init: function() {
             node.game.visualTimer.destroy();
             node.game.doneButton.destroy();
