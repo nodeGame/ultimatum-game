@@ -30,15 +30,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
-
-        // Add session name to data in DB.
-        this.memory.on('insert', function(o) {
-            o.session = node.nodename;
-            let role = node.game.matcher.getRoleFor(o.player);
-            if (role) o.role = role;
-        });
-
-        console.log('init');
+        // Do something.
     });
 
     //////////////////////////////////////////////
@@ -109,7 +101,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 return node.game.isStage('ultimatum');
             });
 
-
             // Update the Payoffs.
             node.on.data('done', function(msg) {
                 var response;
@@ -171,7 +162,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     "time_1.1.2", "time_1.2.2"
                 ],
                 flatten: true,            // Merge items together.
-                flattenByGroup: 'player',  // One row per player every round.
+                flattenByGroup: 'player', // One row per player every round.
                 incremental: true,        // Adds updates to same file.
             });
         }
@@ -205,21 +196,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
         },
         cb: function endgame() {
-            console.log('FINAL PAYOFF PER PLAYER');
-            console.log('***********************');
 
             gameRoom.computeBonus({
-                say: true,   // default false
-                dump: true,  // default false
+                amt: true,    // default auto-detect
+                say: true,    // default false
+                dump: true,   // default false
                 print: true,  // default false
-                addDisconnected: true, // default false
-                amt: true, // default false (auto-detect)
-
-                // Optional. Pre-process the results of each player.
-                // cb: function(info, player) {
-                // // The sum of partial results is diplayed before the total.
-                //         info.partials = [ 10, -1, 7];
-                // }
+                addDisconnected: true // default false
             });
 
             // Dump all memory.
