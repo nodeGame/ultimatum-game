@@ -47,8 +47,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     node.timer.random.timeup();
                 }
 
-                // Call done in other stages, exept the last one and precache.
-                else if (id !== 'precache' && id !== 'endgame') {
+                // Call done in other stages, exept the last one.
+                if (id !== 'endgame') {
                     node.timer.random(2000).done();
                 }
 
