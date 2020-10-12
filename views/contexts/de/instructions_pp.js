@@ -8,17 +8,17 @@ module.exports = function(settings, headers) {
     R = s.REPEAT;
     E = s.EXCHANGE_RATE_INSTRUCTIONS;
     W = s.WAIT_TIME;
-    
+
     return {
         title: "INSTRUKTIONEN",
         instructions: "Anleitung zum Ultimatum Spiel.",
         readCarefully: "Bitte sorgfältig lesen.",
-        thisGameIsPlayed: "This game is played in rounds by two human players randomly paired.",
-        inEachRound: 'In each round, one of the them, called <em>BIDDER</em>, makes an offer to the other player, called <em>RESPONDENT</em>, about how to share ' + C + ' ECU (Experimental Currency). ' + C + ' ECU are equal to ' + E + ' USD.',
-        theRespondent: "The RESPONDENT can either accept or reject the offer of the BIDDER. If he / she accepts, both players split " + C + " ECU accordingly, else both get 0.",
-        theGameIsRepeated: "The game is repeated " + R + " rounds.",
-        important: "Important. If one of the players disconnects for more than " + W + " seconds the game will be terminated.",
-        inSuchACase: "In such a case the player who disconnected will not be paid at all, and the remaining ones will be paid only the show up fee.",
-        ifYouUnderstood: "If you understood the instructions correctly press the button to proceed to the game."
+        thisGameIsPlayed: "Dieses Spiel wird in Runden von zwei zufällig gepaarten menschlichen Spielern gespielt.",
+        inEachRound: "In jeder Runde macht einer von ihnen, <em>BIDDER</em> genannt, dem anderen Spieler, <em>RESPONDER</em>, ein Angebot, wie man " + C + " ECU (experimentelle Währung) teilt. " + C + " ECU entspricht " + E + " USD.",
+        theRespondent: "Der RESPONDER kann das Angebot des BIDDER entweder annehmen oder ablehnen. Wenn er / sie annimmt, teilen beide Spieler " + C + " ECU entsprechend auf, andernfalls erhalten beide 0.",
+        theGameIsRepeated: "Das Spiel wird wiederholt " + R + " Runden.",
+        important: "Wichtig. Wenn einer der Spieler länger als " + W + " Sekunden die Verbindung trennt, wird das Spiel beendet.",
+        inSuchACase: "In einem solchen Fall wird der Spieler, der die Verbindung getrennt hat, überhaupt nicht bezahlt, und die übrigen Spieler erhalten nur die Show-up-Gebühr.",
+        ifYouUnderstood: "Wenn Sie die Anweisungen richtig verstanden haben, drücken Sie die Taste, um mit dem Spiel fortzufahren."
     };
 };

@@ -37,13 +37,12 @@ module.exports = function(treatmentName, settings, stager,
                 cb: function() {
                     let amount = Math.floor(Math.random() * 101);
                     node.timer.setTimeout(function() {
-                        node.say('BID', node.game.partner, amount);
                         // Randomly executes node.done between 2 and 4 seconds.
-                        node.timer.random(2000, 4000).done({ offer: amount});
+                        node.timer.random(1000).done({ offer: amount});
                     }, 2000);
                 }
             },
-            RESPONDENT: {
+            RESPONDER: {
                 init: function() {
                     node.game.offerReceived = null;
                 },
@@ -57,19 +56,17 @@ module.exports = function(treatmentName, settings, stager,
         }
     });
 
-    stager.extendStep('respondent', {
+    stager.extendStep('responder', {
         role: function() { return this.role; },
         partner: function() { return this.partner; },
         roles: {
-            RESPONDENT: {
+            RESPONDER: {
                 cb: () => {
                     let response = Math.random() > 0.5 ?
                         'accepted' : 'rejected';
 
-                    node.say('RESPONSE', node.game.partner, response);
                     node.timer.random(4000).done({
                         offer: node.game.offerReceived,
-                        responseTo: node.game.partner,
                         response: response
                     });
                 }

@@ -27,6 +27,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Access important objects: the channel, and the node instance.
     let channel = gameRoom.channel;
     let node = gameRoom.node;
+    let memory = node.game.memory;
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
@@ -65,7 +66,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // players in pairs and/or to assign them a role.
         // //////////////////////////////////////////////
         matcher: {
-            roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ],
+            roles: [ 'BIDDER', 'RESPONDER', 'SOLO' ],
             match: 'roundrobin', // or 'random_pairs'
             cycle: 'repeat_invert', // or 'repeat', 'mirror', 'mirror_invert'
             // skipBye: false,
@@ -97,53 +98,69 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             // Creates a view for items in the ultimatum stage (all steps).
             // We will use it to save items after each ultimatum round.
-            node.game.memory.view('ultimatum', function(item) {
+            memory.view('ultimatum', function(item) {
                 return node.game.isStage('ultimatum');
             });
 
             // Update the Payoffs.
             node.on.data('done', function(msg) {
-                var response;
+                var data;
+                data = msg.data;
 
-                // If Respondent accepted offer, update earnings.
-                if (msg.data && msg.data.response === 'accepted') {
-                    response = msg.data;
+                // Bidder made an offer.
+                if (data.role === 'BIDDER' && node.game.isStep('bidder')) {
+                    // Tell the partner about the offer.
+                    node.say('BID', data.partner, data.offer);
+                }
 
-                    // Update earnings counts, so that it can be saved
-                    // with GameRoom.computeBonus.
-                    gameRoom.updateWin(response.responseTo,
-                                       settings.COINS - response.offer);
-                    gameRoom.updateWin(msg.from, response.offer);
+                // Responder replied.
+                else if (data.role === 'RESPONDER' &&
+                         node.game.isStep('responder')) {
+
+                    // The the partner about the response.
+                    node.say('RESPONSE', data.partner, data.response);
+
+                    // If Responder accepted offer, update earnings
+                    if (data.response === 'accepted') {
+
+                        // Update earnings counts, so that it can be saved
+                        // with GameRoom.computeBonus.
+                        gameRoom.updateWin(data.partner,
+                            settings.COINS - data.offer);
+
+                        memory.player(data.partner).get('offer', true);
+                        gameRoom.updateWin(msg.from, data.offer);
+                    }
                 }
             });
-        },
-
-        reconnect: function(p, opts) {
-            var offer, partner, role;
-
-            role = opts.plot.role;
-            partner = opts.plot.partner;
-
-            // Reconneting client has role RESPONDENT, in step 'respondent',
-            // and it is not DONE (must take decision).
-            if (role === 'RESPONDENT' &&
-                node.game.isStep(2) &&
-                !opts.willBeDone) {
-
-                offer = node.game.memory
-                    .stage[node.game.getPreviousStep()]
-                    .select('player', '=', partner).first();
-
-                // It may be undefined if, for instance, the bidder also
-                // disconnected in the previous round.
-                if (offer) {
-                    opts.offer = offer.offer;
-                    opts.cb = function(options) {
-                        this.offerReceived = options.offer;
-                    };
-                }
-            }
         }
+
+        // reconnect: function(p, opts) {
+        //     var offer, partner, role;
+        //
+        //     role = opts.plot.role;
+        //     partner = opts.plot.partner;
+        //
+        //     // Reconneting client has role RESPONDER, in step 'responder',
+        //     // and it is not DONE (must take decision).
+        //     if (role === 'RESPONDER' &&
+        //         node.game.isStep(2) &&
+        //         !opts.willBeDone) {
+        //
+        //         offer = memory
+        //             .stage[node.game.getPreviousStep()]
+        //             .select('player', '=', partner).first();
+        //
+        //         // It may be undefined if, for instance, the bidder also
+        //         // disconnected in the previous round.
+        //         if (offer) {
+        //             opts.offer = offer.offer;
+        //             opts.cb = function(options) {
+        //                 this.offerReceived = options.offer;
+        //             };
+        //         }
+        //     }
+        // }
 
     });
 
@@ -152,18 +169,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     //
     // Save the data at the exit function
     ////////////////////////////////////////////////////////
-    stager.extendStep('respondent', {
+    stager.extendStep('responder', {
+
+        reconnect: true,
+
         exit: function() {
-            node.game.memory.ultimatum.save('ultimatum.csv', {
-                // Specify headers in advance.
-                headers: [
-                    "session", "player", "stage.round", "role", "offer",
-                    "response", "timeup", "time_1.1.1", "time_1.2.1",
-                    "time_1.1.2", "time_1.2.2"
+            memory.ultimatum.save('ultimatum.csv', {
+                // Specify header in advance.
+                header: [
+                    "session", "player", "stage.round",
+                    "role", "partner", "offer", "response"
                 ],
                 flatten: true,            // Merge items together.
                 flattenByGroup: 'player', // One row per player every round.
-                incremental: true,        // Adds updates to same file.
+                updatesOnly: true         // Adds updates to same file.
             });
         }
     });
@@ -182,17 +201,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         init: function() {
 
             // Feedback.
-            node.game.memory.view('feedback').save('feedback.csv', {
-                headers: [ 'time', 'timestamp', 'player', 'feedback' ],
-                recurrent: true,
-                recurrentInterval: 50000
+            memory.view('feedback').save('feedback.csv', {
+                header: [ 'timestamp', 'player', 'feedback' ],
+                keepUpdated: true
             });
 
             // Email.
-            node.game.memory.view('email').save('email.csv', {
-                headers: [ 'timestamp', 'player', 'email' ],
-                recurrent: true,
-                recurrentInterval: 50000
+            memory.view('email').save('email.csv', {
+                header: [ 'timestamp', 'player', 'email' ],
+                keepUpdated: true
             });
         },
         cb: function endgame() {
@@ -206,7 +223,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
 
             // Dump all memory.
-            node.game.memory.save('memory_all.json');
+            memory.save('memory_all.json');
+
+            // Save times of all stages.
+            memory.done.save('times.csv', {
+                header: [ 'session', 'player', 'stage', 'time', 'timeup' ]
+            });
+
         },
         minPlayers: undefined
     });

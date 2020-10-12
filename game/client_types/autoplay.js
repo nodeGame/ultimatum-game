@@ -41,8 +41,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                 // Invoking timeup in decision stages.
                 else if ((node.game.role === 'BIDDER' && id === 'bidder') ||
-                        (node.game.role === 'RESPONDENT' &&
-                        id === 'respondent')) {
+                        (node.game.role === 'RESPONDER' &&
+                        id === 'responder')) {
 
                     node.timer.random.timeup();
                 }

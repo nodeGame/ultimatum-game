@@ -118,9 +118,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // work in tandem.
         node.on('RESPONSE_DONE', function(response) {
 
-            // Tell the other player own response.
-            node.say('RESPONSE', node.game.partner, response);
-
             // Write to screen.
             W.write(' You ' + response + ' the offer.', W.gid('container'));
 
@@ -136,16 +133,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             //
             // - time: time passed since the begin of the step
             // - timeup: if a timeup happened
+            // - partner: if any is assigned by the matcher in logic
+            // - role:    if any is assigned by the matcher in logic
             //
-            // which can be overwritten by the parameter.
-            //
-            // Any number of additional properties can
-            // be added and will be stored in the server.
+            // which can be overwritten by user.
             //
             /////////////////////////////////////////////
             node.done({
                 offer: node.game.offerReceived,
-                responseTo: node.game.partner,
                 response: response
             });
         });
@@ -349,10 +344,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     // Write text.
                     root = W.gid('container');
                     W.writeln(' Your offer: ' +  offer +
-                              '. Waiting for the respondent... ', root);
-
-                    // Notify the other player.
-                    node.say('BID', node.game.partner, offer);
+                              '. Waiting for the responder... ', root);
 
                     // Notify server.
                     // Note: If the done callback does not return a value,
@@ -360,7 +352,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     return { offer: offer };
                 }
             },
-            RESPONDENT: {
+            RESPONDER: {
                 /////////////////////////////////////////////////////////////
                 // nodeGame hint: the init function
                 //
@@ -385,8 +377,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 frame: 'resp.html',
                 cb: function() {
                     var that;
-                    // It was a reconnection.
-                    // if (this.offerReceived !== null) node.done();
 
                     //////////////////////////////////////////////
                     // nodeGame hint: context
@@ -420,7 +410,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('respondent', {
+    stager.extendStep('responder', {
 
         /////////////////////////////////////////////////////////////
         // nodeGame hint: role and partner
@@ -446,7 +436,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         donebutton: false,
 
         roles: {
-            RESPONDENT: {
+            RESPONDER: {
                 frame: 'resp.html',
                 timeup: function() {
                     var root, response;
@@ -520,6 +510,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('questionnaire', {
+        frame: 'questionnaire.html',
         cb: function() {
             var options;
 
@@ -553,7 +544,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                                              W.gid('quiz'),
                                              options);
         },
-        frame: 'questionnaire.html',
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the done callback
         //

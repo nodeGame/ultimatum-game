@@ -1,7 +1,7 @@
 # Public files
 
-All files in these directory are static and public accessible. 
+All files in these directory are static and public accessible.
 
-To serve filesstatic files from the directory `en_/` instead of using the templates contained in `views/`, rename `en_/` to `en/`
+To serve static files from the directory `en_/` instead of using the templates contained in `views/`, rename `en_/` to `en/`
 
-In fact, static files are served immediately, if found, and they override the templates. 
+In fact, static files are served immediately, if found, and they override the templates.

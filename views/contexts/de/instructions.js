@@ -1,23 +1,22 @@
 module.exports = function(settings, headers) {
-    var s, C, R, E, B;
+    var s, C, R, E, W;
 
     // Retro-compatibility with nodeGame < 4.0.
     s = settings.pp || settings;
 
-    C = settings.COINS;
-    R = settings.REPEAT;
-    E = settings.EXCHANGE_RATE_INSTRUCTIONS;
-
-    B = (C*R) * (E/C);
+    C = s.COINS;
+    R = s.REPEAT;
+    E = s.EXCHANGE_RATE_INSTRUCTIONS;
+    W = s.WAIT_TIME;
 
     return {
-        title: "Instruktionen",
-        instructions: "Anleitung zum Ultimatum Spiel",
+        title: "INSTRUKTIONEN",
+        instructions: "Anleitung zum Ultimatum Spiel.",
         readCarefully: "Bitte sorgfältig lesen.",
-        thisGame: "This game is played in rounds by two human players randomly paired.",
-        inEachRound: 'In each round, one of the them, called <em>BIDDER</em>, makes an offer to the other player, called <em>RESPONDENT</em>, about how to share ' + C + ' ECU (Experimental Currency). ' + C + ' ECU are equal to ' + E + ' USD.',
-        theRespondent: "The RESPONDENT can either accept or reject the offer of the BIDDER. If he / she accepts, both players split " + C + " ECU accordingly, else both get 0.",
-        theGame: "The game is repeated " + R + " rounds.",
-        ifYouUnderstood: "If you understood the instructions correctly press the button to proceed to the game."
+        thisGame: "Dieses Spiel wird in Runden von zwei zufällig gepaarten menschlichen Spielern gespielt.",
+        inEachRound: "In jeder Runde macht einer von ihnen, <em>BIDDER</em> genannt, dem anderen Spieler, <em>RESPONDER</em>, ein Angebot, wie man " + C + " ECU (experimentelle Währung) teilt. " + C + " ECU entspricht " + E + " USD.",
+        theRespondent: "Der RESPONDER kann das Angebot des BIDDER entweder annehmen oder ablehnen. Wenn er / sie annimmt, teilen beide Spieler " + C + " ECU entsprechend auf, andernfalls erhalten beide 0.",
+        theGame: "Das Spiel wird wiederholt " + R + " Runden.",
+        ifYouUnderstood: "Wenn Sie die Anweisungen richtig verstanden haben, drücken Sie die Taste, um mit dem Spiel fortzufahren."
     };
 };
