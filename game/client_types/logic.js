@@ -233,7 +233,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             // Save times of all stages.
             memory.done.save('times.csv', {
-                header: [ 'session', 'player', 'stage', 'time', 'timeup' ]
+                header: [
+                    'session', 'player', 'stage', 'step', 'round',
+                    'time', 'timeup'
+                ]
             });
 
         },

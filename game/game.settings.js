@@ -43,7 +43,7 @@ module.exports = {
         mood: 60000,
         questionnaire: 90000,
         bidder: 30000,
-        respondent: 30000
+        responder: 30000
     },
 
     // Available treatments:
