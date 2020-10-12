@@ -139,10 +139,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             // which can be overwritten by user.
             //
             /////////////////////////////////////////////
-            node.done({
-                offer: node.game.offerReceived,
-                response: response
-            });
+            node.done({ response: response });
         });
 
         // Set default language prefix.
@@ -495,7 +492,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         // Write inside the element with id "containter".
                         W.write(' Your offer was ' + msg.data + '.',
                                 W.gid('container'));
-                        node.timer.random().done(3000);
+                        node.timer.random(3000).done();
                     });
                 },
                 timeup: null

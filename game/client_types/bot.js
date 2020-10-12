@@ -66,7 +66,6 @@ module.exports = function(treatmentName, settings, stager,
                         'accepted' : 'rejected';
 
                     node.timer.random(4000).done({
-                        offer: node.game.offerReceived,
                         response: response
                     });
                 }
