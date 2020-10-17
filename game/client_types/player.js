@@ -11,7 +11,6 @@
  */
 
 const ngc = require('nodegame-client');
-const Stager = ngc.Stager;
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
@@ -409,21 +408,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('responder', {
 
-        /////////////////////////////////////////////////////////////
-        // nodeGame hint: role and partner
-        //
-        // By default `role` and a `partner` are valid only within a step,
-        // but it is possible to carry over the values between steps.
-        //
-        // Role and partner meaning:
-        //   - falsy      -> delete (default),
-        //   - true       -> keep current value,
-        //   - string     -> as is (must exist),
-        //   - function   -> must return null or a valid role name
-        //////////////////////////////////////////////////////////
-        role: function() { return this.role; },
-        partner: function() { return this.partner; },
-
         //////////////////////////////////////////
         // nodeGame hint: the donebutton parameter
         //
@@ -436,7 +420,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             RESPONDER: {
                 frame: 'resp.html',
                 timeup: function() {
-                    var root, response;
+                    var response;
                     response = Math.random() > 0.5 ? 'accepted' : 'rejected';
                     console.log('randomaccept');
                     node.emit('RESPONSE_DONE', response);

@@ -57,21 +57,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     ////////////////////////////////////////////////////////////////////////
     stager.setDefaultProperty('pushClients', true);
 
-    stager.extendStep('bidder', {
-        ////////////////////////////////////
-        // nodeGame hint: the matcher object
-        //
-        // The matcher step-property is read by the `MatcherManager` object
-        // at `node.game.matcher`. This object takes care of matching together
-        // players in pairs and/or to assign them a role.
-        // //////////////////////////////////////////////
-        matcher: {
-            roles: [ 'BIDDER', 'RESPONDER', 'SOLO' ],
-            match: 'roundrobin', // or 'random_pairs'
-            cycle: 'repeat_invert' // or 'repeat', 'mirror', 'mirror_invert'
-        }
-    });
-
     ///////////////////////////////////
     // nodeGame hint: reconnect handler
     //
@@ -96,15 +81,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             // Creates a view for items in the ultimatum stage (all steps).
             // We will use it to save items after each ultimatum round.
-            memory.view('ultimatum', function(item) {
+            memory.view('ultimatum', function() {
                 return node.game.isStage('ultimatum');
             });
 
             // Update the Payoffs.
             node.on.data('done', function(msg) {
-                var data, partner;
-                data = msg.data;
-                partner = data.partner;
+                let data = msg.data;
+                let partner = data.partner;
 
                 // Bidder made an offer.
                 if (data.role === 'BIDDER' && node.game.isStep('bidder')) {
@@ -127,7 +111,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     if (data.response === 'accepted') {
 
                         // Resolve database item with offer from bidder.
-                        offer = memory.resolveTag('offer');
+                        let offer = memory.resolveTag('offer');
 
                         if (offer) {
                             offer = offer.offer;
@@ -142,8 +126,21 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
         }
 
+    });
 
-
+    stager.extendStep('bidder', {
+        ////////////////////////////////////
+        // nodeGame hint: the matcher object
+        //
+        // The matcher step-property is read by the `MatcherManager` object
+        // at `node.game.matcher`. This object takes care of matching together
+        // players in pairs and/or to assign them a role.
+        // //////////////////////////////////////////////
+        matcher: {
+            roles: [ 'BIDDER', 'RESPONDER', 'SOLO' ],
+            match: 'roundrobin', // or 'random_pairs'
+            cycle: 'repeat_invert' // or 'repeat', 'mirror', 'mirror_invert'
+        }
     });
 
     ////////////////////////////////////////////
@@ -152,33 +149,38 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Save the data at the exit function
     ////////////////////////////////////////////////////////
     stager.extendStep('responder', {
+        // It means that clients keep the roles and partner currently in use.
+        matcher: true,
+        // This callback is executed when a client reconnect.
         reconnect: function(p, opts) {
-            var offer, partner, role;
 
-            role = opts.plot.role;
-            partner = opts.plot.partner;
+            let role = opts.plot.role;
 
             // Reconneting client has role RESPONDER
             // and not yet DONE (must take decision).
             if (role === 'RESPONDER' && !opts.willBeDone) {
 
                 // Get last offer from bidder.
-                offer = memory.resolveTag('offer');
+                let offer = memory.resolveTag('offer');
                 // Equivalent to:
                 // offer = memory
                 //      .stage[node.game.getPreviousStep()]
-                //      .select('player', '=', partner).first();
+                //      .select('player', '=', opts.plot.partner).first();
 
                 // It may be undefined if, for instance, the bidder also
                 // disconnected in the previous round.
                 if (offer) {
                     opts.offer = offer.offer;
+                    // This callback is executed on the reconnecting client
+                    // and it receives the opts object as input
                     opts.cb = function(options) {
+                        // `this` is node.game in the reconnecting client.
                         this.offerReceived = options.offer;
                     };
                 }
             }
         },
+        // The `exit` callback is executed after a step is finished.
         exit: function() {
             memory.ultimatum.save('ultimatum.csv', {
                 // Specify header in advance.
@@ -220,13 +222,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         },
         cb: function endgame() {
 
-            gameRoom.computeBonus({
-                amt: true,    // default auto-detect
-                say: true,    // default false
-                dump: true,   // default false
-                print: true,  // default false
-                addDisconnected: true // default false
-            });
+            // Saves bonus file, and notifies players of earnings.
+            gameRoom.computeBonus();
 
             // Dump all memory.
             memory.save('memory_all.json');

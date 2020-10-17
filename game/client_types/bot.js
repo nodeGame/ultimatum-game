@@ -31,13 +31,12 @@ module.exports = function(treatmentName, settings, stager,
     });
 
     stager.extendStep('bidder', {
-        role: function() { return this.role; },
         roles: {
             BIDDER: {
                 cb: function() {
                     let amount = Math.floor(Math.random() * 101);
                     node.timer.setTimeout(function() {
-                        // Randomly executes node.done between 2 and 4 seconds.
+                        // Randomly executes node.done before 1 second.
                         node.timer.random(1000).done({ offer: amount});
                     }, 2000);
                 }
@@ -57,14 +56,11 @@ module.exports = function(treatmentName, settings, stager,
     });
 
     stager.extendStep('responder', {
-        role: function() { return this.role; },
-        partner: function() { return this.partner; },
         roles: {
             RESPONDER: {
                 cb: () => {
                     let response = Math.random() > 0.5 ?
                         'accepted' : 'rejected';
-
                     node.timer.random(4000).done({
                         response: response
                     });
@@ -73,7 +69,7 @@ module.exports = function(treatmentName, settings, stager,
             BIDDER: {
                 cb: () => {
                     node.on.data('RESPONSE', (msg) => {
-                        node.info(' Your offer was ' + msg.data + '.');
+                        node.info('bot received offer: ' + msg.data);
                         node.timer.random(1000).done();
                     });
                 }
