@@ -1,6 +1,6 @@
 /**
  * # Channels definition file for Ultimatum Game
- * Copyright(c) 2018 Stefano Balietti
+ * Copyright(c) 2020 Stefano Balietti
  * MIT Licensed
  *
  * Configurations options for channel.
@@ -10,12 +10,19 @@
  */
 module.exports = {
 
+    // If FALSE, this channel is not loaded. Default: TRUE.
+    enabled: true,
+
+    // Makes the experiment available at /myexperiment insted of /ultimatum.
     // alias: 'myexperiment',
 
+    // Player endpoint for socket.io connection.
     playerServer: 'ultimatum',
 
+    // Admin endpoint for socket.io connection.
     adminServer: 'ultimatum/admin',
 
+    // Channel output verbosity.
     verbosity: 100,
 
     // If TRUE, players can invoke GET commands on admins.
@@ -30,7 +37,7 @@ module.exports = {
     enableReconnections: true,
 
     // If TRUE, a cookie is set even without authorization. Opening
-    // multiple browser tabs will cause a disconnection in other ones. 
+    // multiple browser tabs will cause a disconnection in other ones.
     // noAuthCookie: true,
 
     // If TRUE, every newly created room is assigned an own subdirectory
@@ -45,18 +52,52 @@ module.exports = {
     // desired length. For example, if `roomCounterChars` is equal to 6 and
     // the current roomCounter value is 123, then room name is: '000123'.
     // Default: 6
-    // roomCounterPadChars: 6
+    // roomCounterPadChars: 6,
 
-    // Reserved for future versions:
+    // If TRUE, channel is served from /
+    // Notice! Other games might not be available and need to adapt
+    // manually access point in index.htm
+    //
+    // Note! Make sure that the endpoint is specified in public/js/index.js.
+    //
+    // @deprecated. Use option --default at startup
+    defaultChannel: false
+
+    /**
+     * ## logClients
+     *
+     * If TRUE, all connected/disconnected clients are logged to a csv file
+     *
+     * Default: FALSE
+     */
+    // logClients: true,
+
+    /**
+     * ## logClientsExtra
+     *
+     * Adds additional fields to the file of logged clients
+     *
+     * Default: undefined
+     */
+    // logClientsExtra: function(p) {
+    //     return [ p.WorkerId || 'NA', p.HITId || 'NA',
+    //              p.AssignmentId || 'NA', p.ExitCode || 'NA' ];
+    // },
+
+    /**
+    * ## logClientsInterval
+    *
+    * How often (in milliseconds) data about clients is written to file system
+    *
+    * Default: 10000
+    */
+    // logClientsInterval: 10000,
+
+
+    // # Reserved for future versions:
 
     // If set, this symbol is inserted between the padded room counter and
     // and the word 'room'.
     // Default: ''
     // roomCounterSeparator: '@'
-
-    // If TRUE, channel is served from /
-    // Notice! Other games might not be available and need to adapt
-    // manually access point in index.htm
-    defaultChannel: false
 };
-

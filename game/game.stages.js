@@ -1,6 +1,6 @@
 /**
  * # Stages of the Ultimatum Game
- * Copyright(c) 2017 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2020 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -9,7 +9,6 @@
 module.exports = function(stager, settings) {
 
     stager
-        .next('precache')
         .next('selectLanguage')
         .next('instructions')
         .next('quiz')
@@ -24,17 +23,19 @@ module.exports = function(stager, settings) {
     stager.extendStage('ultimatum', {
         steps: [
             'bidder',
-            'respondent'
+            'responder'
         ]
     });
 
     // Can skip specific stages or steps here.
 
-    stager.skip('precache');
-    stager.skip('selectLanguage');
-    stager.skip('quiz');
-    stager.skip('instructions');
-    stager.skip('mood');
+    // stager.skip('selectLanguage');
+    // stager.skip('quiz');
+    // stager.skip('instructions');
+    // stager.skip('mood');
     // stager.skip('ultimatum');
     // stager.skip('endgame');
+
+    // To skip a specific step:
+    // stager.skip('ultimatum', 'responder');
 };

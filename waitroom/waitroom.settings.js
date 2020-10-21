@@ -193,7 +193,11 @@ module.exports = {
      *
      * Receives as first parameter the waiting room object itself.
      */
-    // this.ON_CONNECT = null;
+    // ON_CONNECT: function(waitRoom, player) {
+    //     // Auto play with bots on connect.
+    //     if (player.clientType === 'bot') return;
+    //     waitRoom.dispatchWithBots();
+    // },
 
     /**
      * ## ON_DISCONNECT (function) Optional
