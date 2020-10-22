@@ -517,7 +517,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             /////////////////////////////////////////////////////////////
             // nodeGame hint: the widget collection
             //
-            // TODO: fix here.
             // Widgets are re-usable components with predefined methods,
             // such as: hide, highlight, disable, getValues, etc.
             ////////////////////////////////////////////////////////////////
