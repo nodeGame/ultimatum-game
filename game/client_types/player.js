@@ -173,7 +173,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('selectLanguage', {
         frame: 'languageSelection.html',
         cb: function() {
-            
+
             W.setInnerHTML("salutation", node.game.settings.salutation);
 
             node.game.lang = node.widgets.append('SVOGauge',
@@ -192,6 +192,48 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         /////////////////////////////////////////////////////////////
         frame: settings.instructionsPage
     });
+
+    stager.extendStep('demo', {
+        widget: {
+            name: 'ChoiceManager',
+            title: false,
+            options: {
+                forms: [
+                    {
+                        name: 'ChoiceTable',
+                        id: 'agegroup',
+                        mainText: 'What is your age group?',
+                        choices: [
+                            '18-30',
+                            '31-50',
+                            '50+'
+                        ]
+                    },
+                    {
+                        name: 'CustomInput',
+                        id: 'age',
+                        mainText: 'What is your age?',
+                        type: "int",
+                        min: 18,
+                        max: 200
+                    },
+                    {
+                        name: 'Slider',
+                        id: 'countries',
+                        mainText: 'How many countries how you visited?',
+                        hint: 'Please select 100 even if you visited more than 100.',
+                        initialValue: 0,
+                        displayNoChange: false
+                    },
+                ],
+                formsOptions: {
+                    // shuffleChoices: true
+                    requiredChoice: true
+                }
+            }
+        }
+    });
+
 
     stager.extendStep('quiz', {
         /////////////////////////////////////////////////////////////
@@ -216,10 +258,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     {
                         name: 'ChoiceTable',
                         id: 'howMuch',
-                        mainText: quizTexts.howMuchMainText,
-                        choices: quizTexts.howMuchChoices,
-                        correctChoice: 1
-
+                        mainText: 'How many coins will you divide with your partner?',
+                        choices: [
+                            '50',
+                            '100',
+                            '0'
+                        ],
+                        correctChoice: 2
                     },
                     {
                         name: 'ChoiceTable',
@@ -285,8 +330,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         widget: {
             name: 'MoodGauge',
             options: {
-                panel: false,
-                title: false
+                // panel: false,
+                title: 'How do you feel?'
             }
         }
     });

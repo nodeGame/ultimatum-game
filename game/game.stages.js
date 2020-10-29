@@ -9,9 +9,10 @@
 module.exports = function(stager, settings) {
 
     stager
+        .next('demo')
+        .next('quiz')
         .next('selectLanguage')
         .next('instructions')
-        .next('quiz')
         .next('mood')
         .repeat('ultimatum', settings.REPEAT)
         .next('questionnaire')
@@ -29,9 +30,9 @@ module.exports = function(stager, settings) {
 
     // Can skip specific stages or steps here.
 
-    // stager.skip('selectLanguage');
-    // stager.skip('quiz');
-    // stager.skip('instructions');
+    stager.skip('selectLanguage');
+    stager.skip('quiz');
+    stager.skip('instructions');
     // stager.skip('mood');
     // stager.skip('ultimatum');
     // stager.skip('endgame');
