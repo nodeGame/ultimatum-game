@@ -53,14 +53,16 @@ module.exports = {
         standard: {
             description: "More time to wait and no peer pressure.",
             WAIT_TIME: 20,
-            instructionsPage: 'instructions.html'
+            instructionsPage: 'instructions.html',
+            salutation: 'Hello there!'
         },
 
         pp: {
             description:
                 "Introduces peer pressure to players to not disconnect.",
             WAIT_TIME: 10,
-            instructionsPage: 'instructions_pp.html'
+            instructionsPage: 'instructions_pp.html',
+            salutation: 'Good evening Sir.'
         }
     }
 

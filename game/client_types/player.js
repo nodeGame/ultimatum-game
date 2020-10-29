@@ -173,7 +173,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('selectLanguage', {
         frame: 'languageSelection.html',
         cb: function() {
-            node.game.lang = node.widgets.append('LanguageSelector',
+            
+            W.setInnerHTML("salutation", node.game.settings.salutation);
+
+            node.game.lang = node.widgets.append('SVOGauge',
                                                  W.getFrameDocument().body);
         }
     });
