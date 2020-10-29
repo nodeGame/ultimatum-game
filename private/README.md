@@ -1,3 +1,3 @@
-## Private Folder
-
-This folder may contain files needed by the server, e.g., a dataset, that should not go in public/.
+## private folder
+Store here private files that need to be loaded, such as databases, but not shared.
+This folder is not accessible from outside and it is added to .gitignore.

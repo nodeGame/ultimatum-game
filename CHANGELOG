@@ -1,7 +1,10 @@
 # Changelog
 
+## 6.0.2
+- private/ added to .gitignore (will be in git index, but not in npm index).
+
 ## 6.0.1
-- Added private/ to index.
+- Added private/ folder to git index.
 
 ## 6.0.0
 - Refactor to v6.

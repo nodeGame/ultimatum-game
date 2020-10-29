@@ -13,10 +13,9 @@ Session.vim
 *.swp
 *.bak
 
-server/csv
-server/data
-
 data
 node_modules
 
 *.log
+
+private
