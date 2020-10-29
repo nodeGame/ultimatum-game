@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1
+- Added private/ to index.
+
 ## 6.0.0
 - Refactor to v6.
 
