@@ -77,20 +77,45 @@ module.exports = {
      *
      * The treatment assigned to every new group
      *
-     * Accepted values:
+     * It can be the name of a treatment (string), or any valid value:
      *
-     *   - "treatment_rotate": rotates the treatments.
-     *   - undefined: a random treatment will be selected.
-     *   - function: a callback returning the name of the treatment. E.g:
+     *   - "treatment_rotate": rotates the treatments (to offset set
+     *                         ROTATION_OFFSET != 0).
+     *   - "treatment_random": picks a random treatment each time.
+     *   - undefined: defaults to "treatment_random".
+     *   - function: a callback returning the name of the treatment:
      *
-     *       function(treatments, roomCounter) {
-     *           return treatments[num % treatments.length];
+     *       function(treatments, roomCounter, groupIdx, dispatchCounter) {
+     *           return treatments[dispatchCounter % treatments.length];
      *       }
-     *
      */
-    CHOSEN_TREATMENT: function(treatments, roomCounter) {
-        return treatments[roomCounter % treatments.length];
+    CHOSEN_TREATMENT: function(treatments, roomCounter,
+                               groupIdx, dispatchCounter) {
+
+        // - treatments: array of available treatments.
+        // - roomCounter: total number of room created (it is initialized to
+        //                the last created room as loaded in the data folder).
+        // - groupIdx: zero-based group index within same dispatch
+        //             (when POOL_SIZE > GROUP_SIZE).
+        // - dispatchCounter: total number of dispatch calls (a dispatch can
+        //                    send players to an existing room, so it may
+        //                    differ from roomCounter).
+
+        // console.log(roomCounter, batchCounter, dispatchCounter);
+
+        return treatments[dispatchCounter % treatments.length];
     },
+
+    /**
+    * ## ROTATION_OFFSET (integer > 0) Optional
+    *
+    * Offsets the rotation when CHOSEN_TREATMENT = "treatment_rotate"
+    *
+    * Default: 0.
+    *
+    * @see CHOSEN_TREATMENT
+    */
+    // ROTATION_OFFSET: 0,
 
     /**
      * ## DISCONNECT_IF_NOT_SELECTED (experimental)
