@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.0
+- Updated to nodeGame v6.2 (waitroom changes).
+
 ## 6.0.2
 - private/ added to .gitignore (will be in git index, but not in npm index).
 
