@@ -29,7 +29,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
         // Auto play, depedending on the step.
         node.on('PLAYING', function() {
-            let id = node.game.getStepId();
+            var id = node.game.getStepId();
             node.timer.setTimeout(function() {
                 // Widget steps.
                 if (id === 'quiz' ||
