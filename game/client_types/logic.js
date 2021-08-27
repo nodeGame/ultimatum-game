@@ -212,15 +212,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         init: function() {
 
             // Feedback.
-            memory.view('feedback').save('feedback.csv', {
+            memory.view('feedback').stream({
                 header: [ 'timestamp', 'player', 'feedback' ],
-                keepUpdated: true
+                format: 'csv'
             });
 
             // Email.
-            memory.view('email').save('email.csv', {
+            memory.view('email').stream({
                 header: [ 'timestamp', 'player', 'email' ],
-                keepUpdated: true
+                format: 'csv'
             });
         },
         cb: function endgame() {
