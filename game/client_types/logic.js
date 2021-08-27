@@ -31,7 +31,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
-        // Do something.
+
+        // Will automatically save every entry in the database
+        // to file memory.json (format ndjson).
+        // memory.stream();
     });
 
     //////////////////////////////////////////////
@@ -86,7 +89,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
 
             // Update the Payoffs.
-            node.on.data('done', function(msg) {
+            node.on.done(function(msg) {
                 let data = msg.data;
                 let partner = data.partner;
 
@@ -226,7 +229,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             gameRoom.computeBonus();
 
             // Dump all memory.
-            memory.save('memory_all.json');
+            // memory.save('memory_all.json');
 
             // Save times of all stages.
             memory.done.save('times.csv', {
@@ -237,6 +240,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
 
         },
+        // Remove contraints on minimum players.
         minPlayers: undefined
     });
 };
