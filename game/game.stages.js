@@ -6,7 +6,7 @@
  * http://www.nodegame.org
  */
 
-module.exports = function(stager, settings) {
+module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager
         .next('selectLanguage')
