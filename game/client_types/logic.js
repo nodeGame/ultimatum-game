@@ -226,6 +226,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cb: function endgame() {
 
             // Saves bonus file, and notifies players of earnings.
+
             gameRoom.computeBonus();
 
             // Dump all memory.

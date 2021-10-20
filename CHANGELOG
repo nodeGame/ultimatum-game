@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.0.0
+- Use minified nodegame file by default.
+- Support for Bootstrap 5.
+- Using v7 features. e.g., .stream();
+
 ## 6.2.0
 - Updated to nodeGame v6.2 (waitroom changes).
 
