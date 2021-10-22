@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.0.1
+- Use minified CSS.
+
 ## 7.0.0
 - Use minified nodegame file by default.
 - Support for Bootstrap 5.
