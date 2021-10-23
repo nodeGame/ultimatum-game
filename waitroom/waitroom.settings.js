@@ -125,6 +125,37 @@ module.exports = {
     DISCONNECT_IF_NOT_SELECTED: false,
 
     /**
+     * ## REMOTE_DISPATCH (string|object) Optional
+     *
+     * Redirects participants to a third-party server upon dispatch
+     *
+     * Default: false.
+     */
+     // If string.
+     // REMOTE_DISPATCH: 'https://nodegame.org' // Redirect address.
+     // If object.
+     // REMOTE_DISPATCH: {
+     //
+     //     // Redirect address.
+     //     url: 'https://nodegame.org',
+     //
+     //     // If TRUE, appends to the redirect address ?t=treatmentName.
+     //     addTreatment: true,
+     //
+     //     // Manipulates the url before remote dispatch. Parameters:
+     //     // - url: redirect address after addTreatment is evaluated.
+     //     // - treatment: selected treatment.
+     //     // - group: array of player ids to dispatch
+     //     // - waitRoom: reference to the waitRoom object itself.
+     //     preprocess: (url, treatment, group, waitRoom) => {
+     //         // Example: adds the group size and the  id of all players
+     //         // to the redirect address.
+     //         let ids = group.join(',');
+     //         return url + '&l=' + group.length + '&ids=' + ids;
+     //     }
+     // }
+
+    /**
      * ## PLAYER_SORTING
      *
      * Sorts the order of players before dispatching them
