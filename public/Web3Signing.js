@@ -39,6 +39,7 @@
 
     // Checked when the widget is created.
     Web3Signing.dependencies = {
+        Web3: {},
         Feedback: {},
         EmailForm: {}
     };
@@ -516,29 +517,32 @@
         return Web3SigningElement;
     };
 
-
-    Web3Signing.prototype.switchNetwork = async function(){
+    Web3Login.prototype.switchNetwork = async function() {
         try {
             await ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: '0xa86a' }],
-                });
-            } catch (switchError) {
+            });
+        }
+        catch (switchError) {
             // This error code indicates that the chain has not been added to MetaMask.
             if (switchError.code === 4902) {
                 try {
                     await ethereum.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{ chainId: '43114', rpcUrl: 'https://api.avax.network/ext/bc/C/rpc' /* ... */ }],
+                        params: [ {
+                            chainId: '43114',
+                            rpcUrl: 'https://api.avax.network/ext/bc/C/rpc'
+                        }],
                     });
-                } catch (addError) {
+                }
+                catch (addError) {
                 // handle "add" error
                 }
             }
 
         }
-
-    }
+    };
 
     // Login
     Web3Signing.prototype.login = async function() {
@@ -616,12 +620,17 @@
         if (!this.address || !this.code || !this.signature) {return false};
         total = total || this.signMessage();
         if (this.updateUI) {
-            if (this.web3SignBtn){
+            if (this.web3SignBtn) {
                 this.web3SignBtn.disabled = true;
                 this.web3SignBtn.innerHTML = 'Signed!';
             }
         }
-        values = { address: this.account, exitCode: this.code, signature: this.signature, totalWin: total};
+        values = {
+            address: this.account,
+            exitCode: this.code,
+            signature: this.signature,
+            totalWin: total
+        };
 
         this.sendValues(values);
         return values;

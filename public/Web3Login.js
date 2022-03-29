@@ -36,6 +36,7 @@
 
     // Checked when the widget is created.
     Web3Login.dependencies = {
+        Web3: {}
     };
 
     /**
@@ -73,9 +74,6 @@
         this.attempts = null;
 
         this.account = null;
-
-
-
 
         this.showWeb3LoginForm = true;
 
@@ -142,7 +140,7 @@
             web3 = new Web3(Web3.givenProvider);
 
         }
-        else{
+        else {
             console.log('Now ethereum extension found. We recommend Metamask')
             alert(this.getText('noWeb3'))
 
@@ -150,14 +148,12 @@
         /*async function chainChangedFunction () {
             window.location.reload();
         }  */
-        window.ethereum.on('accountsChanged',
-            function() {
-                that.login()
-            });
-        window.ethereum.on('disconnect',
-            function() {
-                that.disconnect()
-            });
+        window.ethereum.on('accountsChanged', function() {
+            that.login()
+        });
+        window.ethereum.on('disconnect', function() {
+            that.disconnect()
+        });
 
 
 
@@ -168,8 +164,8 @@
             this.network = options.network;
         }
         else if ('undefined' !== typeof options.network) {
-            throw new TypeError('Web3Login.init: ' + 'otpions.network ' + 'must be boolean or undefined.' +
-            'Found: ' + options.network);
+            throw new TypeError('Web3Login.init: options.network ' +
+            'must be boolean or undefined. Found: ' + options.network);
         }
 
         if (options.requiredLogin === true) {
@@ -179,8 +175,8 @@
             this.requiredLogin = options.requiredLogin;
         }
         else if ('undefined' !== typeof options.requiredLogin) {
-            throw new TypeError('Web3Login.init: ' + 'options.requiredLogin ' + 'must be boolean or undefined.' +
-            'Found: ' + options.requiredLogin);
+            throw new TypeError('Web3Login.init: options.requiredLogin ' +
+            'must be boolean or undefined. Found: ' + options.requiredLogin);
         }
 
         if (options.submitAddress === true) {
@@ -190,8 +186,8 @@
             this.submitAddress = options.submitAddress;
         }
         else if ('undefined' !== typeof options.submitAddress) {
-            throw new TypeError('Web3Login.init: ' + 'options.submitAddress ' + 'must be boolean or undefined.' +
-            'Found: ' + options.submitAddress);
+            throw new TypeError('Web3Login.init: options.submitAddress ' +
+            'must be boolean or undefined. Found: ' + options.submitAddress);
         }
 
 
@@ -204,8 +200,8 @@
         else if ('undefined' !== typeof options.showWeb3LoginForm) {
             throw new TypeError('Web3LoginForm.init' +
                                 'options.showWeb3LoginForm' +
-                                'must be boolean or undefined. ' +
-                                'Found: ' + options.showWeb3LoginForm);
+                                'must be boolean or undefined. Found: ' +
+                                options.showWeb3LoginForm);
         }
 
 
@@ -251,7 +247,8 @@
         var Web3LoginElement;
         var headerElement;
 
-        var web3LoginDiv, web3LoginParaElement, web3LoginInputElement, web3LoginBtn, web3DeleteBtn, web3LoginGroup;
+        var web3LoginDiv, web3LoginParaElement, web3LoginInputElement;
+        var web3LoginBtn, web3DeleteBtn, web3LoginGroup;
 
         var that = this;
 
@@ -270,15 +267,15 @@
         web3LoginDiv.className = 'input-group'
 
         web3LoginParaElement = document.createElement('p');
-        web3LoginParaElement.innerHTML = '<strong>' + this.getText('message') + '</strong>';
+        web3LoginParaElement.innerHTML = '<strong>' +
+            this.getText('message') + '</strong>';
         Web3LoginElement.appendChild(web3LoginParaElement);
 
         web3LoginInputElement = document.createElement('input');
         web3LoginInputElement.setAttribute('placeholder', 'Address ')
         web3LoginInputElement.setAttribute('disabled', 'true');
         web3LoginInputElement.setAttribute('type', 'string')
-        web3LoginInputElement.className = 'web3Login-address ' +
-                                             'form-control';
+        web3LoginInputElement.className = 'web3Login-address form-control';
         web3LoginInputElement.setAttribute('id', 'showAddress')
 
         web3LoginBtn = document.createElement('button');
@@ -313,21 +310,23 @@
         return Web3LoginElement;
     };
 
-
-
-    Web3Login.prototype.switchNetwork = async function(){
+    Web3Login.prototype.switchNetwork = async function() {
         try {
-                await ethereum.request({
+            await ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: '0xa86a' }],
-                });
-            } catch (switchError) {
+            });
+        }
+        catch (switchError) {
             // This error code indicates that the chain has not been added to MetaMask.
             if (switchError.code === 4902) {
                 try {
                     await ethereum.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{ chainId: '43114', rpcUrl: 'https://api.avax.network/ext/bc/C/rpc' /* ... */ }],
+                        params: [ {
+                            chainId: '43114',
+                            rpcUrl: 'https://api.avax.network/ext/bc/C/rpc'
+                        }],
                     });
                 }
                 catch (addError) {
@@ -336,8 +335,7 @@
             }
 
         }
-
-    }
+    };
 
     // Login
     Web3Login.prototype.login = async function() {
@@ -374,12 +372,12 @@
     Web3Login.prototype.notification = function(opt) {
         var that=this;
         if (opt === true) {
-            alert('Your Wallet Address for the experiment is: ' + that.account +' '
-                + 'The Address will not be linked with your decisions');
+            alert('Your Wallet Address for the experiment is: ' + that.account +
+                ' The Address will not be linked with your decisions');
                 return that.account;
         }
-        else {alert
-            (this.getText('NoLoginAlert'));
+        else {
+            alert(this.getText('NoLoginAlert'));
         }
     }
 
@@ -421,10 +419,10 @@
         var that=this;
         connection=ethereum.isConnected();
         listen=web3.eth.net.isListening();
-        if(connection===false || listen===false) {
+        if (connection===false || listen===false) {
             return false
         }
-        if(this.submitAddress && this.requiredLogin) {
+        if (this.submitAddress && this.requiredLogin) {
             address=that.account
             isAccount=this.checkAddress(address);
             this.notification(isAccount);
