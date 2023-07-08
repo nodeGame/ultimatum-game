@@ -1,6 +1,6 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2020 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2023 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Handles biddings, and responses between two players.
@@ -543,7 +543,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var answers, isTimeup;
             answers = this.quest.getValues();
             isTimeup = node.game.timer.isTimeup();
-            if (!answers.choice && !isTimeup) {
+            if ('undefined' === typeof answers.choice && !isTimeup) {
                 this.quest.highlight();
                 return false;
             }

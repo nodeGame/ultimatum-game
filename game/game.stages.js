@@ -1,6 +1,6 @@
 /**
  * # Stages of the Ultimatum Game
- * Copyright(c) 2020 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2023 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -14,8 +14,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         .next('quiz')
         .next('risk')
         .repeat('ultimatum', settings.REPEAT)
-        .next('questionnaire')
         .next('endgame')
+        .next('questionnaire')
         .gameover();
 
     // Divide stage ultimatum in steps.

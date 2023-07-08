@@ -610,7 +610,7 @@ module.exports = {
         var str, imgs, img;
 
         if (treat.substring(0, 10) === 'treatment_') {
-            treat = treat.substring(10);
+            treat = treat.substring(10, 22);
             img = 'circle.png'
         }
         else {
