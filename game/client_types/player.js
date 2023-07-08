@@ -242,7 +242,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('mood', {
+    stager.extendStep('risk', {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the widget property
         //
@@ -261,30 +261,37 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // As a string, it just includes the name of the widget:
         //
         // ```
-        // widget: 'MoodGauge'
+        // widget: 'RiskGauge'
         // ```
         //
         // As an object, additional options can be set:
         //
         // ```
         // widget: {
-        //     name: 'MoodGauge',
-        //     id: 'myid',
-        //     ref: 'myref', // It will be added as node.game[ref]
-        //     options: { ... }, // Options passed to `node.widgets.append()`
-        //     append: false,
-        //     checkAnswers: false,
-        //     root: ...
-        //     destroyOnExit: false
+        //     name: 'RiskGauge',
+        //
+        //     // Widget-specific options here.
+        //
+        //     // General options for all widgets:
+        //
+        //     id:            'myid',
+        //     ref:           'myref', // A reference added as node.game[ref]
+        //     append: false,          // Does not append to widget to the page
+        //     root:                   // The id of the element under which
+        //                             // appending the widget, or a function
+        //                             // returning the element.
+        //     destroyOnExit: false    // Does not destroy the element when
+        //                             // the step ends.
         // }
         // ```
+        //
+        // See: https://github.com/nodeGame/nodegame/wiki/RiskGauge-Widget-v8
         //////
         widget: {
-            name: 'MoodGauge',
-            options: {
-                panel: false,
-                title: false
-            }
+            name: 'RiskGauge',
+            method: 'Bomb',
+            title: false,
+            panel: false
         }
     });
 
