@@ -517,21 +517,13 @@ module.exports = {
     // Options to control if users can start the game and how.
     //////////////////////////////////////////////////////////
 
-    /** ### ALLOW_PLAY_WITH_BOTS
+    /** ### ALLOW_USER_DISPATCH
      *
      * Allows a player to request to start the game immediately with bots
      *
      * A button is added to the interface.
      *
-     * @deprecated Use ALLOW_USER_DISPATCH instead
-     */
-    ALLOW_PLAY_WITH_BOTS: true,
-
-    /** ### ALLOW_PLAY_WITH_BOTS
-     *
-     * Allows a player to request to start the game immediately with bots
-     *
-     * A button is added to the interface.
+     * Option previously named `ALLOW_PLAY_WITH_BOTS`
      */
     ALLOW_USER_DISPATCH: true,
 
@@ -546,6 +538,72 @@ module.exports = {
      * @see ALLOW_USER_DISPATCH
      */
     ALLOW_SELECT_TREATMENT: true,
+
+    /** ### ADD_DEFAULT_TREATMENTS
+     *
+     * If TRUE, default treatments (e.g., `treatment_rotate`) are displayed
+     *
+     * This option requires both `ALLOW_USER_DISPATCH` and
+     * `ALLOW_SELECT_TREATMENT` to be TRUE.
+     *
+     * Default FALSE
+     *
+     * @see ALLOW_USER_DISPATCH
+     * @see ALLOW_SELECT_TREATMENT
+     */
+    ADD_DEFAULT_TREATMENTS: true,
+
+    /** ### TREATMENT_TILES
+     *
+     * Displays treatments as tiles instead of a dropdown menu
+     *
+     * This is useful to create a simple user interface to select treatments
+     *
+     * This option requires both `ALLOW_USER_DISPATCH` and
+     * `ALLOW_SELECT_TREATMENT` to be TRUE.
+     *
+     * Default TRUE
+     *
+     * @see ALLOW_USER_DISPATCH
+     * @see ALLOW_SELECT_TREATMENT
+     */
+    TREATMENT_TILES: true,
+
+    /** ### TREATMENT_TILE_CB
+     *
+     * Callback to render each treatment tile
+     *
+     * This option requires `ALLOW_USER_DISPATCH`, `ALLOW_SELECT_TREATMENT`,
+     * and `TREATMENT_TILES` to be TRUE.
+     *
+     * Default TRUE
+     *
+     * @see TREATMENT_TILES
+     */
+    TREATMENT_TILE_CB: function(treat, descr, idx, widget) {
+        var str, imgs, img;
+
+        if (treat.substring(0, 10) === 'treatment_') {
+            treat = treat.substring(10, 22);
+            img = 'circle.png'
+        }
+        else {
+            imgs = {
+                pp: "clock.png",
+                standard: "square.png",
+            };
+            img = imgs[treat];
+        }
+
+        str = '<div title="' + descr + '">';
+        if (img) {
+            str += '<img style="width: 30px; margin-right: 20px;" src="icons/';
+            str += img + '" />'
+        }
+        str += treat + '</div>';
+
+        return str;
+    },
 
     /** ### ALLOW_QUERYSTRING_TREATMENT
      *
@@ -573,62 +631,6 @@ module.exports = {
      *
      * Default: "treat"
      */
-    QUERYSTRING_TREATMENT_VAR: "treat",
-
-    /** ### TREATMENT_TILES
-     *
-     * Displays treatments as tiles instead of a dropdown menu
-     *
-     * This is useful to create a simple user interface to select treatments
-     *
-     * This option requires both `ALLOW_USER_DISPATCH` and
-     * `ALLOW_SELECT_TREATMENT` to be TRUE.
-     *
-     * Default TRUE
-     *
-     * @see ALLOW_USER_DISPATCH
-     * @see ALLOW_SELECT_TREATMENT
-     */
-    TREATMENT_TILES: true,
-
-    /** ### ADD_DEFAULT_TREATMENTS
-     *
-     * If TRUE, default treatments (e.g., `treatment_rotate`) are displayed
-     *
-     * This option requires both `ALLOW_USER_DISPATCH` and
-     * `ALLOW_SELECT_TREATMENT` to be TRUE.
-     *
-     * Default FALSE
-     *
-     * @see ALLOW_USER_DISPATCH
-     * @see ALLOW_SELECT_TREATMENT
-     */
-    ADD_DEFAULT_TREATMENTS: true,
-
-
-    TREATMENT_TILE_CB: function(treat, descr, idx, widget) {
-        var str, imgs, img;
-
-        if (treat.substring(0, 10) === 'treatment_') {
-            treat = treat.substring(10, 22);
-            img = 'circle.png'
-        }
-        else {
-            imgs = {
-                pp: "clock.png",
-                standard: "square.png",
-            };
-            img = imgs[treat];
-        }
-
-        str = '<div title="' + descr + '">';
-        if (img) {
-            str += '<img style="width: 30px; margin-right: 20px;" src="icons/';
-            str += img + '" />'
-        }
-        str += treat + '</div>';
-
-        return str;
-    }
+    QUERYSTRING_TREATMENT_VAR: "treat"
 
 };
