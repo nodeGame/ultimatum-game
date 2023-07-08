@@ -18,7 +18,7 @@ module.exports = {
      *
      * If TRUE, it creates a requirements room. Default, TRUE
      */
-    enabled: true,
+    enabled: false,
 
     /**
      * ## maxExecTime

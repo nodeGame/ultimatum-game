@@ -1,6 +1,6 @@
 /**
  * # Waiting Room settings
- * Copyright(c) 2019 Stefano Balietti <ste@nodegame.org>
+ * Copyright(c) 2023 Stefano Balietti <ste@nodegame.org>
  * MIT Licensed
  *
  * Waiting room settings
@@ -81,8 +81,17 @@ module.exports = {
      *
      *   - "treatment_rotate": rotates the treatments (to offset set
      *                         ROTATION_OFFSET != 0).
+     *
+     *   - "treatment_latin_square": rotates across all treatments maximizing
+     *                               randomness in the sequence.
+     *
      *   - "treatment_random": picks a random treatment each time.
+     *
+     *   - "treatment_weighted_random": randomly samples treatments based
+     *                                  on weights defined in TREATMENT_WEIGHTS.
+     *
      *   - undefined: defaults to "treatment_random".
+     *
      *   - function: a callback returning the name of the treatment:
      *
      *       function(treatments, roomCounter, groupIdx, dispatchCounter) {
@@ -118,7 +127,28 @@ module.exports = {
     // ROTATION_OFFSET: 0,
 
     /**
-     * ## DISCONNECT_IF_NOT_SELECTED (experimental)
+    * ## TREATMENT_WEIGHTS (object) Optional
+    *
+    * Sampling weights when CHOSEN_TREATMENT = "treatment_weighted_random"
+    *
+    * Weights do no need to sum to one, they are normalized.
+    *
+    * Treatments that are not listed in TREATMENT_WEIGHTS divide equally
+    * the share of weights not assigned to other treatments. For example:
+    * if a game has 5 treatments treatment1 has a weight of 0.6, treatments2-4
+    * all get a weight of 0.1.
+    *
+    * Default: equal weights for all
+    *
+    * @see CHOSEN_TREATMENT
+    */
+    // TREATMENT_WEIGHTS: {
+        // pp: 0.2,
+        // standard: 0.8
+    // },
+
+    /**
+     * ## DISCONNECT_IF_NOT_SELECTED
      *
      * Disconnect clients if not selected for a game when dispatching
      */
@@ -484,23 +514,121 @@ module.exports = {
         // dispatch: false
     },
 
+    // Options to control if users can start the game and how.
+    //////////////////////////////////////////////////////////
+
+    /** ### ALLOW_PLAY_WITH_BOTS
+     *
+     * Allows a player to request to start the game immediately with bots
+     *
+     * A button is added to the interface.
+     *
+     * @deprecated Use ALLOW_USER_DISPATCH instead
+     */
+    ALLOW_PLAY_WITH_BOTS: true,
+
     /** ### ALLOW_PLAY_WITH_BOTS
      *
      * Allows a player to request to start the game immediately with bots
      *
      * A button is added to the interface.
      */
-    ALLOW_PLAY_WITH_BOTS: true,
+    ALLOW_USER_DISPATCH: true,
 
     /** ### ALLOW_SELECT_TREATMENT
      *
      * Allows a player to select the treatment for the game
      *
-     * This option requires `ALLOW_PLAY_WITH_BOTS` to be TRUE.
+     * This option requires `ALLOW_USER_DISPATCH` to be TRUE.
      *
      * A button is added to the interface.
      *
-     * @experimental
+     * @see ALLOW_USER_DISPATCH
      */
-    ALLOW_SELECT_TREATMENT: true
+    ALLOW_SELECT_TREATMENT: true,
+
+    /** ### ALLOW_QUERYSTRING_TREATMENT
+     *
+     * Allows treatment to be selected via query string
+     *
+     * If so, the game immediately starts if a user connects to an url like:
+     *
+     * https://gameserver.com/game/?treat=treamentName
+     *
+     * This option requires both `ALLOW_USER_DISPATCH` and
+     * `ALLOW_SELECT_TREATMENT` to be TRUE.
+     *
+     * @see QUERYSTRING_TREATMENT_VAR
+     *
+     * Default: FALSE
+     */
+    ALLOW_QUERYSTRING_TREATMENT: true,
+
+    /** ### QUERYSTRING_TREATMENT_VAR
+     *
+     * Sets the querystring variable to select a treatment
+     *
+     * This option requires `ALLOW_USER_DISPATCH`, `ALLOW_SELECT_TREATMENT`,
+     * and `ALLOW_QUERYSTRING_TREATMENT` to be TRUE.
+     *
+     * Default: "treat"
+     */
+    QUERYSTRING_TREATMENT_VAR: "treat",
+
+    /** ### TREATMENT_TILES
+     *
+     * Displays treatments as tiles instead of a dropdown menu
+     *
+     * This is useful to create a simple user interface to select treatments
+     *
+     * This option requires both `ALLOW_USER_DISPATCH` and
+     * `ALLOW_SELECT_TREATMENT` to be TRUE.
+     *
+     * Default TRUE
+     *
+     * @see ALLOW_USER_DISPATCH
+     * @see ALLOW_SELECT_TREATMENT
+     */
+    TREATMENT_TILES: true,
+
+    /** ### ADD_DEFAULT_TREATMENTS
+     *
+     * If TRUE, default treatments (e.g., `treatment_rotate`) are displayed
+     *
+     * This option requires both `ALLOW_USER_DISPATCH` and
+     * `ALLOW_SELECT_TREATMENT` to be TRUE.
+     *
+     * Default FALSE
+     *
+     * @see ALLOW_USER_DISPATCH
+     * @see ALLOW_SELECT_TREATMENT
+     */
+    ADD_DEFAULT_TREATMENTS: true,
+
+
+    TREATMENT_TILE_CB: function(treat, descr, idx, widget) {
+        var str, imgs, img;
+
+        if (treat.substring(0, 10) === 'treatment_') {
+            treat = treat.substring(10);
+            img = 'circle.png'
+        }
+        else {
+            imgs = {
+                pp: "clock.png",
+                standard: "square.png",
+            };
+            img = imgs[treat];
+        }
+
+        str = '<div title="' + descr + '">';
+        if (img) {
+            str += '<img style="width: 30px; margin-right: 20px;" src="icons/';
+            str += img + '" />'
+        }
+        str += treat + '</div>';
+
+        return str;
+    }
+
 };
