@@ -12,7 +12,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         .next('selectLanguage')
         .next('instructions')
         .next('quiz')
-        .next('mood')
+        .next('risk')
         .repeat('ultimatum', settings.REPEAT)
         .next('questionnaire')
         .next('endgame')
@@ -32,7 +32,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // stager.skip('selectLanguage');
     // stager.skip('quiz');
     // stager.skip('instructions');
-    // stager.skip('mood');
+    // stager.skip('risk');
     // stager.skip('ultimatum');
     // stager.skip('endgame');
 

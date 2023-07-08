@@ -34,7 +34,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // Widget steps.
                 if (id === 'quiz' ||
                     id === 'questionnaire' ||
-                    id === 'mood') {
+                    id === 'risk') {
 
                     node.widgets.lastAppended.setValues({ correct: true });
                 }
