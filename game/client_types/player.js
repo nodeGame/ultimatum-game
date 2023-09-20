@@ -62,7 +62,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 });
 
                 // Set default language prefix.
-                W.setUriPrefix(node.player.lang.path);
+                // W.setUriPrefix(node.player.lang.path);
             }
         }
 
@@ -93,10 +93,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     //
     ////////////////////////////////////////////////////////////
     stager.extendStep('selectLanguage', {
-        frame: 'languageSelection.html',
         cb: function() {
-            node.game.lang = node.widgets.append('LanguageSelector',
-                                                 W.getFrameDocument().body);
+            node.game.lang =
+                node.widgets.append('LanguageSelector', W.gid('container'));
         }
     });
 
