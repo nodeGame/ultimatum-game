@@ -60,9 +60,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     /////////////////////////////////////////////
                     node.done({ response: response });
                 });
-
-                // Set default language prefix.
-                // W.setUriPrefix(node.player.lang.path);
             }
         }
 
