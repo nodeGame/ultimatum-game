@@ -18,43 +18,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     let channel = gameRoom.channel;
     let node = gameRoom.node;
 
-    // Quiz texts.
-    const quiz = {
-        howMuchMainText:
-        'How many coins will you divide with your partner?',
-        howMuchChoices: [
-            '50',
-            '100',
-            '0'
-        ],
-
-        rejectMainText: 'If you are a bidder what happens if ' +
-            'your partner rejects your offer?',
-        rejectChoices: [
-            'He or she does not get anything, I keep my share.',
-            'I get everything.',
-            'He or she gets what I offered, I get nothing.',
-            'Both of us get nothing.'
-        ],
-
-        disconnectMainText:
-            'Consider the following scenario. Four players ' +
-            '(A,B,C,D) are playing. B disconnects for more than ' +
-            '30 seconds, and the game is terminated. What happens then?',
-        disconnectChoices: [
-            'A,C,D are paid only the show up fee. B is not paid at all.',
-            'A,C,D are paid the show up fee plus the bonus collected ' +
-                'so far. B is paid only the show up fee.',
-            'A,C,D are paid the show up fee plus the bonus collected ' +
-                'so far. B is not paid at all.',
-            'All players are paid only the show up fee.',
-            'All players are paid the show up fee and the bonus ' +
-                'collected so far.'
-        ]
-    };
-
-    // Specify init function, and extend steps.
-
     gameRoom.use({
 
         initMultiPlayer: {
@@ -148,6 +111,45 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         /////////////////////////////////////////////////////////////
         frame: settings.instructionsPage
     });
+
+    // QUIZ.
+    ////////
+
+    // Quiz texts.
+    const quiz = {
+        howMuchMainText:
+        'How many coins will you divide with your partner?',
+        howMuchChoices: [
+            '50',
+            '100',
+            '0'
+        ],
+
+        rejectMainText: 'If you are a bidder what happens if ' +
+            'your partner rejects your offer?',
+        rejectChoices: [
+            'He or she does not get anything, I keep my share.',
+            'I get everything.',
+            'He or she gets what I offered, I get nothing.',
+            'Both of us get nothing.'
+        ],
+
+        disconnectMainText:
+            'Consider the following scenario. Four players ' +
+            '(A,B,C,D) are playing. B disconnects for more than ' +
+            '30 seconds, and the game is terminated. What happens then?',
+        disconnectChoices: [
+            'A,C,D are paid only the show up fee. B is not paid at all.',
+            'A,C,D are paid the show up fee plus the bonus collected ' +
+                'so far. B is paid only the show up fee.',
+            'A,C,D are paid the show up fee plus the bonus collected ' +
+                'so far. B is not paid at all.',
+            'All players are paid only the show up fee.',
+            'All players are paid the show up fee and the bonus ' +
+                'collected so far.'
+        ]
+    };
+
 
     stager.extendStep('quiz', {
         /////////////////////////////////////////////////////////////
