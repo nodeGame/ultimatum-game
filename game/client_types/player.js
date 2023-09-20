@@ -18,12 +18,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     let channel = gameRoom.channel;
     let node = gameRoom.node;
 
-    // Quiz and Questionnaire texts.
-
-    let quizTexts = {
-
+    // Quiz texts.
+    const quiz = {
         howMuchMainText:
-            'How many coins will you divide with your partner?',
+        'How many coins will you divide with your partner?',
         howMuchChoices: [
             '50',
             '100',
@@ -33,10 +31,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         rejectMainText: 'If you are a bidder what happens if ' +
             'your partner rejects your offer?',
         rejectChoices: [
-            'He does not get anything, I keep my share.',
+            'He or she does not get anything, I keep my share.',
             'I get everything.',
-            'He gets what I offered, I get nothing.',
-            'Both get nothing.'
+            'He or she gets what I offered, I get nothing.',
+            'Both of us get nothing.'
         ],
 
         disconnectMainText:
@@ -53,98 +51,59 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             'All players are paid the show up fee and the bonus ' +
                 'collected so far.'
         ]
-
     };
 
     // Specify init function, and extend steps.
 
-    // Init callback.
-    stager.setOnInit(function() {
-        var header;
+    gameRoom.use({
 
-        node.log('Init.');
+        initMultiPlayer: {
 
-        // SETUP HEADER AND FRAME
+            stager: stager,
 
-        // Add the header (by default on top).
-        header = W.generateHeader();
-        // Try alternative positions: 'bottom', 'left', 'right', for instance:
-        // W.setHeaderPosition('right');
+            customInit: function() {
+                // Add additional debug information while developing the game.
+                // node.game.debugInfo =
+                //    node.widgets.append('DebugInfo', W.getHeader())
 
-        // Add the main frame where the pages are loaded.
-        W.generateFrame();
+                // Add event listeners valid for the whole game.
 
-        // Uncomment to visualize the name of the stages.
-        //node.game.visualStage = node.widgets.append('VisualStage', header);
+                // Note: this listener isn't strictly necessary for this game,
+                // however it is useful to illustrate how node.emit and node.on
+                // work in tandem.
+                node.on('RESPONSE_DONE', function(response) {
 
-        node.game.visualRound = node.widgets.append('VisualRound', header, {
-            // Try alternative display modes (may mix together modes):
-            // displayMode: [
-            //     'COUNT_DOWN_STAGES', 'COUNT_DOWN_STEPS', 'COUNT_DOWN_ROUNDS'
-            // ]
-            // displayMode: [
-            //     'COUNT_UP_STAGES', 'COUNT_UP_STEPS', 'COUNT_UP_ROUNDS'
-            // ]
-            // displayMode: [
-            //     'COUNT_UP_STAGES_TO_TOTAL',
-            //      'COUNT_UP_STEPS_TO_TOTAL',
-            //     'COUNT_UP_ROUNDS_TO_TOTAL'
-            // ]
-            // displayMode: [
-            //     'COUNT_UP_STAGES_TO_TOTAL',
-            //     'COUNT_UP_STEPS_TO_TOTAL_IFNOT1',
-            //     'COUNT_UP_ROUNDS_TO_TOTAL_IFNOT1'
-            // ]
-            // displayMode: [
-            //     'COUNT_UP_STAGES_TO_TOTAL',
-            //     'COUNT_UP_STEPS_IFNOT1',
-            //     'COUNT_UP_ROUNDS_IFNOT1'
-            // ]
-        });
+                    // Write to screen.
+                    W.write(' You ' + response + ' the offer.',
+                            W.gid('container'));
 
-        node.game.visualTimer = node.widgets.append('VisualTimer', header);
+                    //////////////////////////////////////////////
+                    // nodeGame hint:
+                    //
+                    // node.done() communicates to the server that
+                    // the player has completed the current state.
+                    //
+                    // The parameters are send to the server with
+                    // a SET message. This SET message has two
+                    // properties by default:
+                    //
+                    // - time: time passed since the begin of the step
+                    // - timeup: if a timeup happened
+                    // - partner: if any is assigned by the matcher in logic
+                    // - role:    if any is assigned by the matcher in logic
+                    //
+                    // which can be overwritten by user.
+                    //
+                    /////////////////////////////////////////////
+                    node.done({ response: response });
+                });
 
-        // Done button to click.
-        node.game.doneButton = node.widgets.append('DoneButton', header);
+                // Set default language prefix.
+                W.setUriPrefix(node.player.lang.path);
+            }
+        }
 
-        // Add additional debug information while developing the game.
-        // node.game.debugInfo = node.widgets.append('DebugInfo', header)
-
-        // Add event listeners valid for the whole game.
-
-        // Note: this listener isn't strictly necessary for this game,
-        // however it is useful to illustrate how node.emit and node.on
-        // work in tandem.
-        node.on('RESPONSE_DONE', function(response) {
-
-            // Write to screen.
-            W.write(' You ' + response + ' the offer.', W.gid('container'));
-
-            //////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // node.done() communicates to the server that
-            // the player has completed the current state.
-            //
-            // The parameters are send to the server with
-            // a SET message. This SET message has two
-            // properties by default:
-            //
-            // - time: time passed since the begin of the step
-            // - timeup: if a timeup happened
-            // - partner: if any is assigned by the matcher in logic
-            // - role:    if any is assigned by the matcher in logic
-            //
-            // which can be overwritten by user.
-            //
-            /////////////////////////////////////////////
-            node.done({ response: response });
-        });
-
-        // Set default language prefix.
-        W.setUriPrefix(node.player.lang.path);
-    }
-);
+    });
 
     ////////////////////////////////////////////////////////////
     // nodeGame hint: step propreties.
@@ -204,40 +163,32 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // game folder. However, they can also be loaded from the
         // views/ directory (if not found in public/).
         /////////////////////////////////////////////////////////////
-        // frame: 'quiz.html',
         widget: {
-            name: 'ChoiceManager',
-            title: false,
-            options: {
-                forms: [
-                    {
-                        name: 'ChoiceTable',
-                        id: 'howMuch',
-                        mainText: quizTexts.howMuchMainText,
-                        choices: quizTexts.howMuchChoices,
-                        correctChoice: 1
+            forms: [
+                {
+                    id: 'howMuch',
+                    mainText: quiz.howMuchMainText,
+                    choices: quiz.howMuchChoices,
+                    correctChoice: 1
 
-                    },
-                    {
-                        name: 'ChoiceTable',
-                        id: 'reject',
-                        orientation: 'v',
-                        mainText: quizTexts.rejectMainText,
-                        choices: quizTexts.rejectChoices,
-                        correctChoice: 3
-                    },
-                    {
-                        name: 'ChoiceTable',
-                        id: 'disconnect',
-                        orientation: 'v',
-                        mainText: quizTexts.disconnectMainText,
-                        choices: quizTexts.disconnectChoices,
-                        correctChoice: treatmentName === 'pp' ? 1 : 3
-                    }
-                ],
-                formsOptions: {
-                    shuffleChoices: true
+                },
+                {
+                    id: 'reject',
+                    orientation: 'v',
+                    mainText: quiz.rejectMainText,
+                    choices: quiz.rejectChoices,
+                    correctChoice: 3
+                },
+                {
+                    id: 'disconnect',
+                    orientation: 'v',
+                    mainText: quiz.disconnectMainText,
+                    choices: quiz.disconnectChoices,
+                    correctChoice: treatmentName === 'pp' ? 1 : 3
                 }
+            ],
+            formsOptions: {
+                shuffleChoices: true
             }
         }
     });
@@ -289,10 +240,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //////
         widget: {
             name: 'RiskGauge',
-            method: 'Bomb',
-            title: false,
-            panel: false
-        }
+            method: 'Bomb'
+        },
+        // Note: DoneButton initially disabled, will be automatically
+        // re-enabled by the Risk widget upon completing the task.
+        donebutton: false
     });
 
     stager.extendStep('bidder', {
@@ -498,13 +450,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('questionnaire', {
-        frame: 'questionnaire.html',
         cb: function() {
-            var options;
 
-            options = {
+            /////////////////////////////////////////////////////////////
+            // nodeGame hint: more control on widgets survey widgets
+            //
+            // Widgets can be created programmatically inside a step callback.
+            // This is useful, for instance, if the options are depending
+            // the state of the game.
+            /////////////////////////
+            var options = {
                 id: 'quest',
-                title: false,
                 mainText: 'If the game was terminated because of a ' +
                           'player disconnection, in your opinion, why ' +
                           'did the other player disconnect?',
@@ -515,18 +471,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     'The game was boring, not clear, too long, etc.',
                     'Not applicable.'
                 ],
-                freeText: 'Please report any additional comment to the ' +
-                          'experimenters.',
                 shuffleChoices: true,
                 orientation: 'v'
             };
 
-            /////////////////////////////////////////////////////////////
-            // nodeGame hint: the widget collection
-            //
-            // Widgets are re-usable components with predefined methods,
-            // such as: hide, highlight, disable, getValues, etc.
-            ////////////////////////////////////////////////////////////////
             this.quest = node.widgets.append('ChoiceTable',
                                              W.gid('quiz'),
                                              options);
@@ -552,15 +500,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
-        // Another widget-step (see the mood step above).
+        // Another widget-step (see the risk step above).
         widget: 'EndScreen',
         init: function() {
             node.game.visualTimer.destroy();
             node.game.doneButton.destroy();
-        },
-        // Callback using for testing purposes, ignore it
-        cb: function() {
-            console.log('PHANTOMJS EXITING');
         }
     });
 };

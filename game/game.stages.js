@@ -14,8 +14,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         .next('quiz')
         .next('risk')
         .repeat('ultimatum', settings.REPEAT)
-        .next('endgame')
         .next('questionnaire')
+        .next('endgame')
         .gameover();
 
     // Divide stage ultimatum in steps.

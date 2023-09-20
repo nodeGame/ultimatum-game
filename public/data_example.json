@@ -1,6 +1,0 @@
-{
-    "some_data": "Here you can load additional data for your game",
-    "more_data": [1, 2, 3, 4, 5, 6, 7, 9, 10],
-    "even_more_data": "This is of course just an example...",
-    "version": "0.5.0"
-}
