@@ -57,7 +57,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     // which can be overwritten by user.
                     //
                     /////////////////////////////////////////////
-                    node.done({ response: response });
+                    node.done({ response: resp });
                 });
             }
         }
@@ -84,6 +84,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // `stager.extendStep`: modifies a step
     // `stager.extendStage`: modifies a stage, and all enclosed steps
     // `stager.setDefaultProperty`: modifies all stages and steps
+    //
+    // Good to know:
+    // - In this example only some of the text is translated.
+    // - Where do the translations come from? Check the views/ folder.
     //
     ////////////////////////////////////////////////////////////
     stager.extendStep('selectLanguage', {
@@ -475,28 +479,44 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('questionnaire', {
         cb: function() {
 
-            /////////////////////////////////////////////////////////////
-            // nodeGame hint: more control on widgets survey widgets
+            /////////////////////////////////////////
+            // nodeGame hint: manually load a widget
             //
             // Widgets can be created programmatically inside a step callback.
             // This is useful, for instance, if the options are depending
-            // the state of the game.
-            /////////////////////////
+            // the state of the game (here the chosen language).
+            ////////////////////////////////////////////////////
             var options = {
                 id: 'quest',
-                mainText: 'If the game was terminated because of a ' +
+                shuffleChoices: true,
+                orientation: 'v'
+            };
+
+            if (node.player.lang.shortName === 'en') {
+                options.mainText = 'If the game was terminated because of a ' +
                           'player disconnection, in your opinion, why ' +
-                          'did the other player disconnect?',
-                choices: [
+                          'did the other player disconnect?';
+                options.choices = [
                     'He or she was losing.',
                     'Technical failure.',
                     'The player found a more rewarding task.',
                     'The game was boring, not clear, too long, etc.',
                     'Not applicable.'
-                ],
-                shuffleChoices: true,
-                orientation: 'v'
-            };
+                ];
+            }
+            else {
+                options.mainText = 'Wenn das Spiel aufgrund einer ' +
+                    'Verbindungsunterbrechung eines Spielers abgebrochen ' +
+                    'wurde, warum hat der andere Spieler Ihrer Meinung nach ' +
+                    'die Verbindung getrennt?';
+                options.choices = [
+                    'Er oder sie verlor.',
+                    'Technischer Fehler.',
+                    'Der Spieler/in hat eine lohnendere Aufgabe gefunden.',
+                    'Das Spiel war langweilig, nicht klar, zu lang usw.',
+                    'Unzutreffend.'
+                ];
+            }
 
             this.quest = node.widgets.append('ChoiceTable',
                                              W.gid('quiz'),
@@ -523,7 +543,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
-        // Another widget-step (see the risk step above).
         widget: 'EndScreen',
         init: function() {
             node.game.visualTimer.destroy();
