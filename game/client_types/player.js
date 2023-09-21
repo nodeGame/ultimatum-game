@@ -115,7 +115,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // - Additional options exist for the `frame` param to automatically
     //   search & replace the DOM, and store a page in the cache.
     // - While the game is running, the settings are available under:
-    // `node.game.settings`.
+    //   `node.game.settings`.
     ////////////////////////
     stager.extendStep('instructions', {
         frame: settings.instructionsPage
