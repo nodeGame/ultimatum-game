@@ -93,6 +93,24 @@ module.exports = {
     */
     // logClientsInterval: 10000,
 
+    /**
+     * ## page404
+     *
+     * A custom page displayed when a resource is not found.
+     *
+     * Default: '404.htm'
+     */
+    // page404: '404.htm',
+
+    /**
+     * ## collectIp
+     *
+     * If TRUE, the IP address is collected and stored.
+     *
+     * Default: FALSE
+     */
+    //  collectIp: true
+
 
     // # Reserved for future versions:
 

@@ -10,13 +10,13 @@
  * http://www.nodegame.org
  */
 
-const ngc = require('nodegame-client');
-
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    let channel = gameRoom.channel;
-    let node = gameRoom.node;
+    // nodegame v8 experimental.
+    // `gameRoom.use`: sets a policy to configure nodeGame.
+    // Policy `initMultiPlayer` inits the game by adding a header with widgets
+    // and the mainframe where all the pages are loaded.
 
     gameRoom.use({
 
@@ -34,11 +34,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // Note: this listener isn't strictly necessary for this game,
                 // however it is useful to illustrate how node.emit and node.on
                 // work in tandem.
-                node.on('RESPONSE_DONE', function(response) {
+                node.on('RESPONSE_DONE', function(resp) {
 
                     // Write to screen.
-                    W.write(' You ' + response + ' the offer.',
-                            W.gid('container'));
+                    W.write(' You ' + resp + ' the offer.', W.gid('container'));
 
                     //////////////////////////////////////////////
                     // nodeGame hint:
@@ -66,7 +65,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     ////////////////////////////////////////////////////////////
-    // nodeGame hint: step propreties.
+    // nodeGame hint: step properties.
     //
     // A step is a set of properties under a common label (id).
     //
@@ -90,10 +89,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     //
     ////////////////////////////////////////////////////////////
     stager.extendStep('selectLanguage', {
-        cb: function() {
-            node.game.lang =
-                node.widgets.append('LanguageSelector', W.gid('container'));
-        }
+        css: '#container { padding-top: 60px };',
+        widget: 'LanguageSelector'
     });
 
     stager.extendStep('instructions', {
@@ -258,17 +255,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 frame: 'bidder.html',
                 widget: {
                     name: 'CustomInput',
+                    mainText: 'Make an offer between 0 and ' +
+                        settings.COINS + ' to another player',
                     ref: 'bid',
-                    options: {
-                        type: 'int',
-                        min: 0,
-                        max: settings.COINS,
-                        requiredChoice: true,
-                        // className: 'centered',
-                        // root: 'container',
-                        mainText: 'Make an offer between 0 and ' +
-                            settings.COINS + ' to another player'
-                    }
+                    type: 'int',
+                    min: 0,
+                    max: settings.COINS,
+                    requiredChoice: true
                 },
 
                 /////////////////////////////////////////////////////////////
