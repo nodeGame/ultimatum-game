@@ -164,7 +164,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the ChoiceManager widget
         //
-
+        // If not specified, the default widget of a widget step is the
+        // `ChoiceManager`. This is a widget that contains multiple other
+        // survey-like widgets (i.e., to get an input from users).
+        //
+        // The `forms` field specifies which widgets are included, notice
+        // that the default widget here is the `ChoiceTable` widget (i.e.,
+        // a multiple-choice widget).
+        //
+        // Good to know:
+        // - Options that are the same for all forms, can be included in
+        //   the `formsOptions` field.
         /////////////////////////////////////////////////////////////
         widget: {
             forms: [
