@@ -13,13 +13,14 @@
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    // nodegame v8 experimental.
+    // nodegame v8 experimental (sintax may change).
     // `gameRoom.use`: sets a policy to configure nodeGame.
-    // Policy `initMultiPlayer` inits the game by adding a header with widgets
-    // and the mainframe where all the pages are loaded.
 
     gameRoom.use({
 
+        // Policy `initMultiPlayer` inits the game by adding a header with
+        // widgets (VisualStage, VisualTimer, DisconnectBox, and DoneButton)
+        // and the mainframe where all the pages are loaded.
         initMultiPlayer: {
 
             stager: stager,
@@ -120,7 +121,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     //   search & replace the DOM, and store a page in the cache.
     // - While the game is running, the settings are available under:
     //   `node.game.settings`.
-    ////////////////////////
+    //////////////////////////
     stager.extendStep('instructions', {
         frame: settings.instructionsPage
     });
@@ -273,6 +274,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // to redefine each step property to fit the purpose of the role.
         /////////////////////////////////////////////////////////////////
         roles: {
+
             BIDDER: {
                 frame: 'bidder.html',
                 widget: {
@@ -320,27 +322,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     return { offer: offer };
                 }
             },
+
             RESPONDER: {
-                /////////////////////////////////////////////////////////////
-                // nodeGame hint: the init function
-                //
-                // It is a function that is executed before the main callback,
-                // and before loading any frame.
-                //
-                // Likewise, it is possible to define an `exit` function that
-                // will be executed upon exiting the step.
-                //
-                // Notice that if the function is defined at the level of the
-                // stage, it will be executed only once upon entering the
-                // stage. If, you need to have it executed every round the
-                // stage is repeated, add it to the first step of the stage.
-                //
-                // There is also an `exit` callback, executed when exiting
-                // the stage or step.
-                ////////////////////////////////////////////////////////////
-                init: function() {
-                    node.game.offerReceived = null;
-                },
+
                 donebutton: false,
                 frame: 'resp.html',
 
@@ -355,26 +339,23 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // example, only reads a text.
                 ////////////////////////////////////////////////
                 cb: function() {
-                    var that;
 
-                    //////////////////////////////////////////////
-                    // nodeGame hint: context
-                    //
-                    // var that = this;
-                    //
-                    // Unlike many other programming languages, in javascript
-                    // the object /this/ assumes different values depending
-                    // on the scope of the function where it is called.
-                    //
-                    // Inside the step-callback `this` references `node.game`.
-                    //
-                    // We bind the value of `this` to another variable (`that`),
-                    // so that we can still access it inside the callback
-                    // of the method `node.on.data` (more on this later).
-                    ////////////////////////////////////////////////////////////
-                    that = this;
                     node.on.data('BID', function(msg) {
-                        that.offerReceived = msg.data;
+
+                        //////////////////////////////////////////////
+                        // nodeGame hint: session
+                        //
+                        // `node.game.session` is a persistent memory to
+                        // store data that is needed across steps, and that
+                        // could be lost upon a disconnection.
+                        //
+                        // Session data is stored both locally and on the
+                        // server (separately for each player). Upon
+                        // re-connection the local session is reinstated.
+                        /////////////////////////////////////////////////
+                        node.game.session('bid', msg.data);
+
+                        // End the step.
                         node.done();
                     });
                 },
@@ -396,7 +377,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //
         // The DoneButton widget reads it disables it (false).
         // If string, it replaces the text on the button.
-        /////////////////
+        /////////////////////////////////////////////////
         donebutton: false,
 
         roles: {
@@ -409,14 +390,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     node.emit('RESPONSE_DONE', response);
                 },
                 cb: function() {
-                    // If for any reason an offer is not found here (e.g.,
-                    // bidder disconnected in previous round, show an error
-                    // and reject.)
-                    if (!this.offerReceived) {
-                        node.emit('RESPONSE_DONE', 'rejected');
-                        return;
-                    }
-                    W.setInnerHTML('theoffer', this.offerReceived);
+                    // Retrieve offer from session.
+                    var offer = node.game.session('bid');
+
+                    W.setInnerHTML('theoffer', offer);
                     W.show('offered');
 
                     W.gid('accept').onclick = function() {
@@ -526,8 +503,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // nodeGame hint: the done callback
         //
         // `done` is a callback execute after a call to `node.done()`
+        //
         // If it returns FALSE, the call to `node.done` is canceled.
-        // Other return values are sent to the server, and replace any
+        // Other return values are sent to the server and replace any
         // parameter previously passed to `node.done`.
         //////////////////////////////////////////////
         done: function() {
@@ -544,6 +522,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('endgame', {
         widget: 'EndScreen',
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the init function
+        //
+        // It is a function that is executed before the main callback,
+        // and before loading any frame.
+        //
+        // Notice that if the function is defined at the level of the
+        // stage, it will be executed only once upon entering the
+        // stage. If, you need to have it executed every round the
+        // stage is repeated, add it to the first step of the stage.
+        //
+        // There is also an `exit` callback, executed when exiting
+        // the stage or step.
+        ////////////////////////////////////////////////////////////
         init: function() {
             node.game.visualTimer.destroy();
             node.game.doneButton.destroy();
