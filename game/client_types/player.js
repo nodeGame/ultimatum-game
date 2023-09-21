@@ -366,7 +366,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     //
                     // We bind the value of `this` to another variable (`that`),
                     // so that we can still access it inside the callback
-                    // function of the method `node.on.data`.
+                    // of the method `node.on.data` (more on this later).
                     ////////////////////////////////////////////////////////////
                     that = this;
                     node.on.data('BID', function(msg) {
@@ -434,7 +434,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 frame: 'bidder.html',
                 cb: function() {
                     //////////////////////////////////////////////
-                    // nodeGame hint:
+                    // nodeGame hint: node.on.data
+                    //
+                    // This function listens for an incoming msg from the
+                    // server or another player.
                     //
                     // nodeGame offers several types of event
                     // listeners. They are all resemble the syntax
