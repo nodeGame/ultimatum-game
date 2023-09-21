@@ -65,9 +65,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     ////////////////////////////////////////////////////////////
-    // nodeGame hint: step properties.
+    // nodeGame hint: extend step.
     //
     // A step is a set of properties under a common label (id).
+    //
+    // Here, we set two properties:
+    //
+    // - widget: create a widget step
+    // - css: adds CSS instructions to the page
     //
     // Properties are looked up with a cascade mechanism. That is,
     // all steps inherit the properties defined at the stage level in
@@ -93,15 +98,24 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         widget: 'LanguageSelector'
     });
 
+    /////////////////////////////////////////////////////////////
+    // nodeGame hint: the frame property and the settings object
+    //
+    // The `frame` property defines which page is loaded. Here
+    // we take the value from settings (the file game.settings.js).
+    // Because the loaded settings depend on the treatment, here
+    // are loading the instructions specific to the treatment.
+    //
+    // What happens if no `frame` property is specified?
+    // Nothing is loaded, unless it is a widget step (like the previous step),
+    // where the default page (/pages/default.htm) is loaded from the server;
+    // a copy of this page is available in the public/ folder of this game
+    // (it is a copy, so changes won't be reflected, unless you
+    // set it as the `frame` property).
+    //
+    // While the game is running, the settings are available under:
+    // `node.game.settings`.
     stager.extendStep('instructions', {
-        /////////////////////////////////////////////////////////////
-        // nodeGame hint: the settings object
-        //
-        // The settings object is automatically populated with the
-        // settings specified for the treatment chosen by the waiting
-        // room (file: game.settings.js). Settings are sent to each remote
-        // client and it is available under: `node.game.settings`.
-        /////////////////////////////////////////////////////////////
         frame: settings.instructionsPage
     });
 
