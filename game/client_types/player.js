@@ -77,7 +77,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Properties are looked up with a cascade mechanism. That is,
     // all steps inherit the properties defined at the stage level in
     // which they are inserted. All stages inherit the properties
-    // defined at the game level. Finally, it fallbacks on nodeGame defaults.
+    // defined at the game level. Finally, it fallbacks to nodeGame defaults.
     //
     // To add/modify properties use the commands:
     //
@@ -99,6 +99,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Because the loaded settings depend on the treatment, here
     // are loading the instructions specific to the treatment.
     //
+    //
+    // Pages are loaded from the public/ directory inside the
+    // game folder. However, they can also be loaded from the
+    // views/ directory (if not found in public/).
+    //
     // What happens if no `frame` property is specified?
     // Nothing is loaded, unless it is a widget step (like the previous step),
     // where the default page (/pages/default.htm) is loaded from the server;
@@ -106,7 +111,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // (it is a copy, so changes won't be reflected, unless you
     // set it as the `frame` property).
     //
-    // While the game is running, the settings are available under:
+    // Good to know:
+    // - Additional options exist for the `frame` param to automatically
+    //   search & replace the DOM, and store a page in the cache.
+    // - While the game is running, the settings are available under:
     // `node.game.settings`.
     ////////////////////////
     stager.extendStep('instructions', {
@@ -154,17 +162,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('quiz', {
         /////////////////////////////////////////////////////////////
-        // nodeGame hint: the frame parameter
+        // nodeGame hint: the ChoiceManager widget
         //
-        // The frame parameter is passed to `W.loadFrame` to
-        // load a new page. Additional options exist to automatically
-        // search & replace the DOM, and store a page in the cache.
-        // In its simplest form, it is just a string indicating the
-        // path to the page to load.
-        //
-        // Pages are loading from the public/ directory inside the
-        // game folder. However, they can also be loaded from the
-        // views/ directory (if not found in public/).
+
         /////////////////////////////////////////////////////////////
         widget: {
             forms: [
