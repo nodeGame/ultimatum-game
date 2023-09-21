@@ -78,7 +78,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // all steps inherit the properties defined at the stage level in
     // which they are inserted. All stages inherit the properties
     // defined at the game level. Finally, it fallbacks on nodeGame defaults.
-
     //
     // To add/modify properties use the commands:
     //
