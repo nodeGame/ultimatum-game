@@ -78,13 +78,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // all steps inherit the properties defined at the stage level in
     // which they are inserted. All stages inherit the properties
     // defined at the game level. Finally, it fallbacks on nodeGame defaults.
-    //
-    // The property named `cb` is one of the most important.
-    //
-    // It defines the callback that will be called during the step.
-    // By default, each steps inherits an empty callback, so that
-    // it is not necessary to implement the cb property, if the
-    // player has, for example, only to read a text.
+
     //
     // To add/modify properties use the commands:
     //
@@ -115,6 +109,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     //
     // While the game is running, the settings are available under:
     // `node.game.settings`.
+    ////////////////////////
     stager.extendStep('instructions', {
         frame: settings.instructionsPage
     });
@@ -335,6 +330,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 },
                 donebutton: false,
                 frame: 'resp.html',
+
+                //////////////////////////////////////////////
+                // nodeGame hint: cb step property
+                //
+                // It defines the callback that will be called during the step.
+                // By default, each steps inherits an empty callback, so that
+                // it is not necessary to implement the cb property, if the
+                // player has, for example, only to read a text.
+                ////////////////////////////////////////////////
                 cb: function() {
                     var that;
 
