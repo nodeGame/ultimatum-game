@@ -71,7 +71,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     //
     // Here, we set two properties:
     //
-    // - widget: create a widget step
+    // - widget: create a widget step (more on this later)
     // - css: adds CSS instructions to the page
     //
     // Properties are looked up with a cascade mechanism. That is,
@@ -343,10 +343,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 //////////////////////////////////////////////
                 // nodeGame hint: cb step property
                 //
-                // It defines the callback that will be called during the step.
-                // By default, each steps inherits an empty callback, so that
-                // it is not necessary to implement the cb property, if the
-                // player has, for example, only to read a text.
+                // It is the callback that will be called after the frame
+                // is loaded.
+                //
+                // By default, each steps inherits an empty callback, so it
+                // is not necessary to implement one, if the player, for
+                // example, only reads a text.
                 ////////////////////////////////////////////////
                 cb: function() {
                     var that;
